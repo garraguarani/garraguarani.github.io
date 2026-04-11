@@ -50,7 +50,7 @@ if (Input.isTouching()) {
             return 'play';
         }
         // Check "CONTROLES" button area
-        if (pos.y > 355 && pos.y < 405 && pos.x > 80 && pos.x < 280) {
+        if (pos.y > 375 && pos.y < 405 && pos.x > 80 && pos.x < 280) {
             return 'controls';
         }
         // Check "SONIDO" button area
