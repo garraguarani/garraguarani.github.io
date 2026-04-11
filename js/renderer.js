@@ -6,4 +6,4 @@ const assetList = [
     // Other assets...
 ];
 
-export default assetList;
+// assetList está disponible globalmente
