@@ -42,27 +42,27 @@ const MenuScreen = (() => {
         }
 
         // Touch detection
-        if (Input.isTouching()) {
-            const pos = Input.getTouchGamePos();
-            if (pos) {
-                // Check "JUGAR" button area
-                if (pos.y > 380 && pos.y < 430 && pos.x > 80 && pos.x < 280) {
-                    return 'play';
-                }
-                // Check "CONTROLES" button area
-                if (pos.y > 440 && pos.y < 480 && pos.x > 80 && pos.x < 280) {
-                    return 'controls';
-                }
-                // Check "SONIDO" button area
-                if (pos.y > 490 && pos.y < 530 && pos.x > 80 && pos.x < 280) {
-                    soundOn = !soundOn;
-                    Audio.setEnabled(soundOn);
-                    OPTIONS[2] = `SONIDO: ${soundOn ? 'ON' : 'OFF'}`;
-                    Audio.menuSelect();
-                    return null;
-                }
-            }
+if (Input.isTouching()) {
+    const pos = Input.getTouchGamePos();
+    if (pos) {
+        // Check "JUGAR" button area
+        if (pos.y > 345 && pos.y < 375 && pos.x > 80 && pos.x < 280) {
+            return 'play';
         }
+        // Check "CONTROLES" button area
+        if (pos.y > 395 && pos.y < 425 && pos.x > 80 && pos.x < 280) {
+            return 'controls';
+        }
+        // Check "SONIDO" button area
+        if (pos.y > 445 && pos.y < 475 && pos.x > 80 && pos.x < 280) {
+            soundOn = !soundOn;
+            Audio.setEnabled(soundOn);
+            OPTIONS[2] = `SONIDO: ${soundOn ? 'ON' : 'OFF'}`;
+            Audio.menuSelect();
+            return null;
+        }
+    }
+}
 
         // Enter/Space to select
         if (inputCooldown <= 0 && (Input.isKeyDown('Enter') || Input.isKeyDown('Space'))) {
