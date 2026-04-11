@@ -46,15 +46,15 @@ if (Input.isTouching()) {
     const pos = Input.getTouchGamePos();
     if (pos) {
         // Check "JUGAR" button area
-        if (pos.y > 345 && pos.y < 375 && pos.x > 80 && pos.x < 280) {
+        if (pos.y > 365 && pos.y < 395 && pos.x > 80 && pos.x < 280) {
             return 'play';
         }
         // Check "CONTROLES" button area
-        if (pos.y > 395 && pos.y < 425 && pos.x > 80 && pos.x < 280) {
+        if (pos.y > 415 && pos.y < 445 && pos.x > 80 && pos.x < 280) {
             return 'controls';
         }
         // Check "SONIDO" button area
-        if (pos.y > 445 && pos.y < 475 && pos.x > 80 && pos.x < 280) {
+        if (pos.y > 465 && pos.y < 495 && pos.x > 80 && pos.x < 280) {
             soundOn = !soundOn;
             Audio.setEnabled(soundOn);
             OPTIONS[2] = `SONIDO: ${soundOn ? 'ON' : 'OFF'}`;
