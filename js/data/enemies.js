@@ -1,0 +1,98 @@
+/* ============================================
+   GARRA GUARANÍ — Enemy Types Data
+   ============================================ */
+
+const ENEMY_TYPES = {
+    // --- Basic ---
+    runner: {
+        name: 'Corredor',
+        health: 3,
+        speed: 120,
+        shootRate: 2.0,
+        reward: 100,
+        width: 20,
+        height: 22,
+        damage: 12,
+        defaultPattern: 'straight'
+    },
+    dribbler: {
+        name: 'Driblador',
+        health: 3,
+        speed: 100,
+        shootRate: 0,  // doesn't shoot
+        reward: 150,
+        width: 20,
+        height: 22,
+        damage: 12,
+        defaultPattern: 'zigzag'
+    },
+    lateral: {
+        name: 'Lateral',
+        health: 3,
+        speed: 140,
+        shootRate: 2.5,
+        reward: 120,
+        width: 18,
+        height: 20,
+        damage: 12,
+        defaultPattern: 'diagonal'
+    },
+    // --- Intermediate ---
+    defender: {
+        name: 'Defensor',
+        health: 3,
+        speed: 60,
+        shootRate: 3.0,
+        reward: 300,
+        width: 24,
+        height: 26,
+        damage: 20,
+        defaultPattern: 'straight'
+    },
+    midfielder: {
+        name: 'Mediocampista',
+        health: 3,
+        speed: 85,
+        shootRate: 1.2,
+        reward: 250,
+        width: 20,
+        height: 22,
+        damage: 15,
+        defaultPattern: 'weave'
+    },
+    goalkeeper: {
+        name: 'Portero',
+        health: 3,
+        speed: 50,
+        shootRate: 1.5,
+        reward: 350,
+        width: 26,
+        height: 26,
+        damage: 20,
+        defaultPattern: 'horizontal'
+    },
+    // --- Advanced ---
+    star: {
+        name: '10 Rival',
+        health: 3,
+        speed: 130,
+        shootRate: 0.8,
+        reward: 500,
+        width: 22,
+        height: 24,
+        damage: 20,
+        defaultPattern: 'erratic'
+    },
+    coach: {
+        name: 'Director Técnico',
+        health: 3,
+        speed: 70,
+        shootRate: 2.0,
+        reward: 600,
+        width: 24,
+        height: 28,
+        damage: 15,
+        defaultPattern: 'stay_top',
+        buffNearby: true
+    }
+};

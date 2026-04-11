@@ -1,0 +1,24 @@
+{
+    "name": "Garra Guaraní",
+    "short_name": "Garra 🇵🇾",
+    "description": "Vertical Shooter Mobile del Mundial 2026 — ¡Defendé la albirroja!",
+    "start_url": "/",
+    "display": "fullscreen",
+    "orientation": "portrait",
+    "background_color": "#0a0a1a",
+    "theme_color": "#CE1126",
+    "lang": "es",
+    "icons": [
+        {
+            "src": "assets/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "categories": ["games", "entertainment"]
+}

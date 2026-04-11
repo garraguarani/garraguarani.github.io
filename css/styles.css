@@ -1,0 +1,266 @@
+/* ============================================
+   GARRA GUARANÍ — Global Styles
+   Mobile-first vertical shooter PWA
+   ============================================ */
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --py-red: #CE1126;
+    --py-red-dark: #9B0D1D;
+    --py-red-glow: #FF1A35;
+    --py-white: #FFFFFF;
+    --py-blue: #0038A8;
+    --py-blue-dark: #002266;
+    --py-gold: #FFD700;
+    --py-gold-dark: #B8960F;
+    --bg-dark: #0a0a1a;
+    --bg-darker: #050510;
+    --text-primary: #FFFFFF;
+    --text-secondary: #a0a0c0;
+    --pixel-font: 'Press Start 2P', monospace;
+    --hud-height-top: 36px;
+    --hud-height-bottom: 48px;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-darker);
+    font-family: var(--pixel-font);
+    color: var(--text-primary);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* --- Game Wrapper --- */
+#game-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-darker);
+}
+
+#game-canvas {
+    display: block;
+    background: var(--bg-dark);
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    /* Size set dynamically via JS */
+}
+
+/* --- HUD Overlay --- */
+.hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.hud.hidden {
+    display: none;
+}
+
+.hud-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--hud-height-top);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+    z-index: 11;
+}
+
+.hud-health {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+
+#hud-health-icon {
+    font-size: 10px;
+    line-height: 1;
+}
+
+.hud-health-bar {
+    width: 80px;
+    height: 8px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.hud-health-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--py-red) 0%, var(--py-red-glow) 100%);
+    transition: width 0.2s ease;
+}
+
+.hud-score {
+    font-size: 8px;
+    color: var(--py-gold);
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
+    flex: 1;
+    text-align: center;
+}
+
+.hud-mega {
+    font-size: 8px;
+    text-align: right;
+    flex: 0.5;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
+}
+
+.hud-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--hud-height-bottom);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+    z-index: 11;
+}
+
+.hud-btn {
+    pointer-events: all;
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 8px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    font-family: inherit;
+}
+
+.hud-btn:active {
+    transform: scale(0.9);
+    background: rgba(255,255,255,0.2);
+}
+
+.hud-btn:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.hud-btn-garra {
+    border-color: var(--py-red);
+    background: rgba(206, 17, 38, 0.3);
+}
+
+.hud-btn-garra:not(:disabled) {
+    animation: garra-pulse 1s ease-in-out infinite;
+    border-color: var(--py-red-glow);
+    box-shadow: 0 0 12px rgba(255, 26, 53, 0.5);
+}
+
+@keyframes garra-pulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(255, 26, 53, 0.4); }
+    50% { box-shadow: 0 0 20px rgba(255, 26, 53, 0.8); }
+}
+
+.hud-garra-bar {
+    flex: 1;
+    height: 10px;
+    margin: 0 8px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.hud-garra-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--py-red) 0%, var(--py-gold) 100%);
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+/* --- Ad Container --- */
+.ad-container {
+    position: absolute;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+}
+
+.ad-container.hidden {
+    display: none;
+}
+
+.ad-placeholder {
+    width: 320px;
+    height: 50px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px dashed rgba(255,255,255,0.2);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+}
+
+/* --- Utility --- */
+.hidden {
+    display: none !important;
+}
+
+/* --- Screen shake effect applied to canvas --- */
+#game-canvas.shake {
+    animation: screen-shake 0.15s ease-in-out;
+}
+
+@keyframes screen-shake {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(-3px, 2px); }
+    40% { transform: translate(3px, -2px); }
+    60% { transform: translate(-2px, 3px); }
+    80% { transform: translate(2px, -3px); }
+}
+
+/* --- Fullscreen adjustments for safe area (notch phones) --- */
+@supports (padding: env(safe-area-inset-top)) {
+    .hud-top {
+        padding-top: calc(4px + env(safe-area-inset-top));
+    }
+    .hud-bottom {
+        padding-bottom: calc(4px + env(safe-area-inset-bottom));
+    }
+}

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir C:\\\\Users\\\\pc\\\\Desktop\\\\Proyectos\\\\GarraGuarani\\\\Audio\\\\Inicio:*)",
+      "Bash(node --check js/data/powerups.js)",
+      "Bash(node --check js/data/weapons.js)",
+      "Bash(node --check js/systems/audio.js)",
+      "Bash(node --check js/main.js)"
+    ]
+  }
+}

@@ -1,0 +1,309 @@
+/* ============================================
+   GARRA GUARANÍ — Boss Entity
+   ============================================ */
+
+class Boss {
+    constructor() {
+        this.active = false;
+        this.alive = false;
+        this.x = 0;
+        this.y = 0;
+        this.width = CONFIG.BOSS_WIDTH;
+        this.height = CONFIG.BOSS_HEIGHT;
+        this.health = 100;
+        this.maxHealth = 100;
+        this.phase = 0;
+        this.totalPhases = 3;
+        this.patterns = [];
+        this.name = 'Boss';
+        this.colors = ['#FF0000', '#FFFFFF', '#0000FF'];
+        this.time = 0;
+        this.shootTimer = 0;
+        this.phaseTimer = 0;
+        this.flashTimer = 0;
+        this.entering = true;
+        this.targetY = 80;
+    }
+
+    init(cfg, team) {
+        this.active = true;
+        this.alive = true;
+        this.x = CONFIG.GAME_WIDTH / 2;
+        this.y = -80;
+        this.width = CONFIG.BOSS_WIDTH;
+        this.height = CONFIG.BOSS_HEIGHT;
+        this.health = cfg.health;
+        this.maxHealth = cfg.health;
+        this.phase = 0;
+        this.totalPhases = cfg.phases || 3;
+        this.patterns = cfg.patterns || ['spread'];
+        this.name = cfg.name || `Capitán ${team.name}`;
+        this.colors = team.colors;
+        this.time = 0;
+        this.shootTimer = 0.5;
+        this.phaseTimer = 0;
+        this.flashTimer = 0;
+        this.entering = true;
+        this.targetY = 80;
+    }
+
+    update(dt) {
+        this.time += dt;
+        this.flashTimer = Math.max(0, this.flashTimer - dt);
+
+        // Entry animation
+        if (this.entering) {
+            this.y += 60 * dt;
+            if (this.y >= this.targetY) {
+                this.y = this.targetY;
+                this.entering = false;
+            }
+            return;
+        }
+
+        // Phase transitions
+        const healthPercent = this.health / this.maxHealth;
+        const expectedPhase = Math.floor((1 - healthPercent) * this.totalPhases);
+        if (expectedPhase > this.phase && expectedPhase < this.totalPhases) {
+            this.phase = expectedPhase;
+            this.phaseTimer = 0;
+            // Flash effect on phase change
+            this.flashTimer = 0.3;
+            Particles.explode(this.x, this.y, 15, this.colors[0], 100, 3);
+        }
+
+        this.phaseTimer += dt;
+
+        // Movement based on current phase pattern
+        const pattern = this.patterns[Math.min(this.phase, this.patterns.length - 1)];
+        this._applyMovement(pattern, dt);
+
+        // Shooting
+        this.shootTimer -= dt;
+        if (this.shootTimer <= 0) {
+            this._shoot(pattern);
+            const baseRate = 1.2 - this.phase * 0.2;
+            this.shootTimer = Math.max(0.3, baseRate);
+        }
+    }
+
+    _applyMovement(pattern, dt) {
+        const W = CONFIG.GAME_WIDTH;
+        switch (pattern) {
+            case 'spread':
+                this.x = W/2 + Math.sin(this.time * 1.2) * (W * 0.35);
+                this.y = this.targetY + Math.sin(this.time * 0.8) * 20;
+                break;
+            case 'charge':
+                this.x = W/2 + Math.sin(this.time * 1.5) * (W * 0.3);
+                // Occasionally charge downward
+                if (Math.sin(this.phaseTimer * 0.5) > 0.7) {
+                    this.y = this.targetY + 60;
+                } else {
+                    this.y += (this.targetY - this.y) * 2 * dt;
+                }
+                break;
+            case 'circular':
+                this.x = W/2 + Math.cos(this.time * 1.0) * (W * 0.3);
+                this.y = this.targetY + Math.sin(this.time * 1.0) * 40;
+                break;
+            case 'shield':
+                this.x = W/2 + Math.sin(this.time * 0.8) * (W * 0.25);
+                this.y = this.targetY + Math.sin(this.time * 1.5) * 15;
+                break;
+            case 'spiral':
+                this.x = W/2 + Math.cos(this.time * 2) * (W * 0.25);
+                this.y = this.targetY + Math.sin(this.time * 2) * 30;
+                break;
+            case 'diagonal':
+                this.x = W/2 + Math.sin(this.time * 1.8) * (W * 0.35);
+                this.y = this.targetY + Math.cos(this.time * 1.3) * 35;
+                break;
+            case 'speed':
+                this.x = W/2 + Math.sin(this.time * 2.5) * (W * 0.4);
+                this.y = this.targetY + Math.sin(this.time * 1.8) * 25;
+                break;
+            case 'burst':
+                this.x = W/2 + Math.sin(this.time * 1.0) * (W * 0.2);
+                this.y = this.targetY;
+                break;
+            default:
+                this.x = W/2 + Math.sin(this.time) * (W * 0.3);
+        }
+    }
+
+    _shoot(pattern) {
+        if (!window.Game) return;
+
+        switch (pattern) {
+            case 'spread':
+                this._shootSpread(5, 0.3);
+                break;
+            case 'charge':
+                this._shootAimed(2);
+                break;
+            case 'circular':
+                this._shootCircular(8);
+                break;
+            case 'shield':
+                this._shootSpread(3, 0.2);
+                break;
+            case 'spiral':
+                this._shootSpiral(6);
+                break;
+            case 'diagonal':
+                this._shootDiagonal();
+                break;
+            case 'speed':
+                this._shootAimed(3);
+                break;
+            case 'burst':
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => this._shootSpread(7, 0.35), i * 100);
+                }
+                break;
+            default:
+                this._shootSpread(3, 0.25);
+        }
+    }
+
+    _shootSpread(count, spreadAngle) {
+        const startAngle = Math.PI / 2 - spreadAngle * (count - 1) / 2;
+        for (let i = 0; i < count; i++) {
+            const angle = startAngle + i * spreadAngle;
+            const b = window.Game.enemyBullets.get();
+            if (!b) return;
+            b.init(
+                this.x, this.y + this.height / 2,
+                Math.cos(angle) * CONFIG.ENEMY_BULLET_SPEED,
+                Math.sin(angle) * CONFIG.ENEMY_BULLET_SPEED,
+                12, '#FF4444', { isEnemy: true, width: 5, height: 5 }
+            );
+        }
+    }
+
+    _shootAimed(count) {
+        const player = window.Game.player;
+        if (!player) return;
+        for (let i = 0; i < count; i++) {
+            const dx = player.x - this.x + (Math.random() - 0.5) * 40;
+            const dy = player.y - this.y;
+            const len = Math.sqrt(dx * dx + dy * dy);
+            const b = window.Game.enemyBullets.get();
+            if (!b) return;
+            b.init(
+                this.x + (Math.random() - 0.5) * 20, this.y + this.height / 2,
+                (dx / len) * CONFIG.ENEMY_BULLET_SPEED * 1.2,
+                (dy / len) * CONFIG.ENEMY_BULLET_SPEED * 1.2,
+                15, '#FFAA00', { isEnemy: true, width: 5, height: 5 }
+            );
+        }
+    }
+
+    _shootCircular(count) {
+        for (let i = 0; i < count; i++) {
+            const angle = (i / count) * Math.PI * 2 + this.time * 0.5;
+            const b = window.Game.enemyBullets.get();
+            if (!b) return;
+            b.init(
+                this.x, this.y,
+                Math.cos(angle) * CONFIG.ENEMY_BULLET_SPEED * 0.8,
+                Math.sin(angle) * CONFIG.ENEMY_BULLET_SPEED * 0.8,
+                10, '#FF66FF', { isEnemy: true, width: 4, height: 4 }
+            );
+        }
+    }
+
+    _shootSpiral(count) {
+        for (let i = 0; i < count; i++) {
+            const angle = this.time * 3 + (i / count) * Math.PI * 2;
+            const b = window.Game.enemyBullets.get();
+            if (!b) return;
+            b.init(
+                this.x, this.y,
+                Math.cos(angle) * CONFIG.ENEMY_BULLET_SPEED * 0.7,
+                Math.sin(angle) * CONFIG.ENEMY_BULLET_SPEED * 0.7,
+                10, '#66FFFF', { isEnemy: true, width: 4, height: 4 }
+            );
+        }
+    }
+
+    _shootDiagonal() {
+        const angles = [Math.PI / 4, Math.PI * 3/4, Math.PI / 2];
+        for (const angle of angles) {
+            const b = window.Game.enemyBullets.get();
+            if (!b) return;
+            b.init(
+                this.x, this.y + this.height / 2,
+                Math.cos(angle) * CONFIG.ENEMY_BULLET_SPEED,
+                Math.sin(angle) * CONFIG.ENEMY_BULLET_SPEED,
+                12, '#FFFF44', { isEnemy: true, width: 5, height: 5 }
+            );
+        }
+    }
+
+    takeDamage(amount) {
+        this.health -= amount;
+        this.flashTimer = 0.08;
+        if (this.health <= 0) {
+            this.health = 0;
+            this.alive = false;
+            this.active = false;
+        }
+    }
+
+    draw(ctx) {
+        const cx = Math.floor(this.x);
+        const cy = Math.floor(this.y);
+        const w = this.width;
+        const h = this.height;
+
+        const img = Renderer.getImage('boss');
+        if (img) {
+            // Boss Glow
+            ctx.globalAlpha = 0.3 + Math.sin(this.time * 10) * 0.1;
+            ctx.fillStyle = CONFIG.COLORS.PY_GOLD;
+            ctx.beginPath();
+            ctx.arc(cx, cy, w * 0.8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.beginPath();
+            ctx.ellipse(cx, cy + h/2 + 5, w/2, h/4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw Sprite scaled
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(Math.PI);
+            ctx.drawImage(img, -w/2, -h/2, w, h);
+            ctx.restore();
+
+            // Captain Armband (re-drawn on top of sprite)
+            ctx.fillStyle = CONFIG.COLORS.PY_GOLD;
+            ctx.fillRect(cx - w/2, cy - h/2 + 10, 8, 4);
+        } else {
+            this._drawProcedural(ctx, cx, cy, w, h);
+        }
+
+        // Health bar
+        const barW = w + 20;
+        const barH = 5;
+        const barX = cx - barW/2;
+        const barY = cy - h/2 - 20;
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(barX, barY, barW, barH);
+        const fillW = (this.health / this.maxHealth) * barW;
+        const healthColor = this.health / this.maxHealth > 0.3 ? CONFIG.COLORS.PY_RED : '#FF0000';
+        ctx.fillStyle = healthColor;
+        ctx.fillRect(barX, barY, fillW, barH);
+    }
+
+    _drawProcedural(ctx, cx, cy, w, h) {
+        const [mainColor, accentColor, altColor] = this.colors;
+        ctx.fillStyle = mainColor;
+        ctx.fillRect(cx - w/2, cy - h/2, w, h);
+    }
+}
