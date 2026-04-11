@@ -115,15 +115,11 @@ const MenuScreen = (() => {
         // --- Decorative Section: Trophy, Protagonist, Soccer Balls ---
         const decorY = 200;
 
-        // Draw Copa del Mundo (Trophy) - stylized pixel art
-        _drawTrophy(ctx, W / 2, decorY, time);
+       // Floating soccer balls
+_drawFloatingBalls(ctx, W, H, time);
 
-        // Floating soccer balls around trophy
-        _drawFloatingBalls(ctx, W, H, time);
-
-        // Protagonist image in the center (small, doesn't overlap title or buttons)
-        _drawProtagonist(ctx, W / 2, decorY + 60, time);
-
+// Imagen protagonista inicio
+_drawProtagonistInicio(ctx, W / 2, decorY + 40, time);
         // Decorative line
         ctx.strokeStyle = CONFIG.COLORS.PY_RED;
         ctx.lineWidth = 2;
@@ -222,27 +218,33 @@ const MenuScreen = (() => {
         ctx.globalAlpha = 1;
     }
 
-    // Draw protagonist image
+  // Draw protagonist image
     function _drawProtagonist(ctx, cx, cy, time) {
         const img = Renderer.getImage('protagonist');
         if (img) {
-            const size = 48; // Small size to not overlap title or buttons
+            const size = 48;
             const glow = Math.sin(time * 3) * 0.1 + 0.4;
-
-            // Glow effect
             ctx.shadowColor = CONFIG.COLORS.PY_GOLD;
             ctx.shadowBlur = 15 + glow * 10;
-
-            // Draw centered
             ctx.drawImage(img, cx - size / 2, cy - size / 2, size, size);
-
             ctx.shadowBlur = 0;
         } else {
-            // Fallback: draw emoji if image not loaded
             ctx.font = '32px serif';
             ctx.globalAlpha = 0.5;
             ctx.fillText('🦸', cx, cy);
             ctx.globalAlpha = 1;
+        }
+    }
+
+    function _drawProtagonistInicio(ctx, cx, cy, time) {
+        const img = Renderer.getImage('protagonista_inicio');
+        if (img) {
+            const size = 160;
+            const glow = Math.sin(time * 3) * 0.1 + 0.4;
+            ctx.shadowColor = CONFIG.COLORS.PY_GOLD;
+            ctx.shadowBlur = 15 + glow * 10;
+            ctx.drawImage(img, cx - size / 2, cy - size / 2, size, size);
+            ctx.shadowBlur = 0;
         }
     }
 
