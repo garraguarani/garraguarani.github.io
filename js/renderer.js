@@ -38,6 +38,7 @@ const Renderer = (() => {
             boss: 'assets/images/sprites/boss.png',
             protagonist: 'assets/images/protagonist.png',
             trophy: 'assets/images/ui/trophy.png'
+            protagonista_inicio: 'assets/images/ui/protagonista-inicio.png'
         };
 
         const loaders = Object.entries(assetList).map(([name, url]) => {
