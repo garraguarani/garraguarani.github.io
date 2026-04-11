@@ -37,7 +37,7 @@ const Renderer = (() => {
             enemy_base: 'assets/images/sprites/enemy_base.png',
             boss: 'assets/images/sprites/boss.png',
             protagonist: 'assets/images/protagonist.png',
-            trophy: 'assets/images/ui/trophy.png'
+            trophy: 'assets/images/ui/trophy.png',
             protagonista_inicio: 'assets/images/ui/protagonista-inicio.png'
         };
 
