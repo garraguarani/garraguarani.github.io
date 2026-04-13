@@ -8,14 +8,14 @@ const ShopScreen = (() => {
     let selectedItem = 0;
 
     const ITEMS = [
-        { id: 'upgrade_basic', name: 'Mejorar Básica', price: 500, emoji: '⚽', type: 'upgrade', weapon: 'basic' },
-        { id: 'unlock_fire', name: 'Pelota Fuego', price: 1500, emoji: '🔥', type: 'unlock', weapon: 'fire' },
-        { id: 'unlock_triple', name: 'Triple Pelota', price: 1500, emoji: '🫓', type: 'unlock', weapon: 'triple' },
-        { id: 'unlock_guided', name: 'Pelota Guiada', price: 2000, emoji: '🧉', type: 'unlock', weapon: 'guided' },
-        { id: 'unlock_bomb', name: 'Pelota Bomba', price: 2000, emoji: '🥧', type: 'unlock', weapon: 'bomb' },
-        { id: 'megagol', name: 'Mega Gol x1', price: 800, emoji: '🍜', type: 'megagol' },
-        { id: 'heal', name: 'Restaurar Vida', price: 300, emoji: '❤', type: 'heal' },
-        { id: 'shield', name: 'Escudo Extra', price: 1000, emoji: '🛡', type: 'shield' },
+        { id: 'upgrade_basic', name: 'Mejorar Básica', price: 1000, emoji: '⚽', type: 'upgrade', weapon: 'basic' },
+        { id: 'unlock_fire', name: 'Pelota Fuego', price: 2000, emoji: '🔥', type: 'unlock', weapon: 'fire' },
+        { id: 'unlock_triple', name: 'Triple Pelota', price: 3000, emoji: '🫓', type: 'unlock', weapon: 'triple' },
+        { id: 'unlock_guided', name: 'Pelota Guiada', price: 5000, emoji: '🧉', type: 'unlock', weapon: 'guided' },
+        { id: 'unlock_bomb', name: 'Pelota Bomba', price: 7000, emoji: '🥧', type: 'unlock', weapon: 'bomb' },
+        { id: 'megagol', name: 'Mega Gol x1', price: 10000, emoji: '🍜', type: 'megagol' },
+        { id: 'heal', name: 'Restaurar Vida', price: 600, emoji: '❤', type: 'heal' },
+        { id: 'shield', name: 'Escudo Extra', price: 3000, emoji: '🛡', type: 'shield' },
     ];
 
     function _isItemAvailable(item, levelIndex) {
