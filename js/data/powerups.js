@@ -59,9 +59,9 @@ const POWERUP_TYPES = {
 /** Drop table — what enemies can drop */
 const DROP_TABLE = {
     weights: {
-        none: 70,        // Mayor probabilidad de que no dropie nada
-        coin: 20,        // Monedas (bonus de score)
-        health: 10,      // Vida (más común que powerups)
+        none: 90,        // Mayor probabilidad de que no dropie nada
+        coin: 6,        // Monedas (bonus de score)
+        health: 4,      // Vida (más común que powerups)
         // Power-ups gateados por nivel
         asado: 0,        // Se desbloquea por nivel
         chipa: 0,        // Se desbloquea por nivel
@@ -74,9 +74,9 @@ const DROP_TABLE = {
     roll(levelIndex = 0) {
         // Construir pesos dinámicos según el nivel
         const dynamicWeights = {
-            none: 70,
-            coin: 18,
-            health: 12,
+            none: 90,
+            coin: 5,
+            health: 5,
             asado: 0,
             chipa: 0,
             terere: 0,
