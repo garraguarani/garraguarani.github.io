@@ -51,8 +51,8 @@ const POWERUP_TYPES = {
         emoji: '₲',
         color: '#FFD700',
         effect: 'money',
-        amount: 200,
-        description: '+200₲ bonus'
+        amount: 50,
+        description: '+50₲ bonus'
     }
 };
 
