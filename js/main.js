@@ -116,6 +116,8 @@ const Game = (() => {
     // --- Update ---
     function update(dt) {
         Background.update(dt);
+        Weather.update(dt);
+        Crowd.update(dt);
 
         switch (state) {
             case CONFIG.STATES.MENU:
@@ -217,6 +219,8 @@ const Game = (() => {
             GameOverScreen.reset();
             HUD.hide();
             Audio.gameOver();
+            Audio.setAmbientVolume(0);
+            Weather.setType('none');
         }
 
         // Keyboard shortcuts
@@ -252,6 +256,8 @@ const Game = (() => {
                 VictoryScreen.reset();
                 VictoryScreen.setFinalVictory(true);
                 Audio.victory();
+                Audio.setAmbientVolume(0);
+                Weather.setType('none');
             } else {
                 state = CONFIG.STATES.LEVEL_SELECT;
             }
@@ -266,6 +272,8 @@ const Game = (() => {
         } else if (result === 'menu') {
             state = CONFIG.STATES.MENU;
             player.fullReset();
+            Audio.setAmbientVolume(0);
+            Weather.setType('none');
         }
     }
 
@@ -278,6 +286,8 @@ const Game = (() => {
         } else if (result === 'menu') {
             state = CONFIG.STATES.MENU;
             player.fullReset();
+            Audio.setAmbientVolume(0);
+            Weather.setType('none');
         }
     }
 
@@ -326,6 +336,7 @@ const Game = (() => {
 
     function _renderPlaying(ctx) {
         Background.draw(ctx);
+        Crowd.draw(ctx);
         powerups.drawAll(ctx);
         enemies.drawAll(ctx);
         if (currentBoss.active) currentBoss.draw(ctx);
@@ -333,6 +344,7 @@ const Game = (() => {
         enemyBullets.drawAll(ctx);
         player.draw(ctx);
         Particles.draw(ctx);
+        Weather.draw(ctx);
 
         // Boss intro text
         if (state === CONFIG.STATES.BOSS_INTRO) {
@@ -400,6 +412,10 @@ const Game = (() => {
             currentTeamKey = LevelSelectScreen.getTeamForLevel(levelIndex);
         }
 
+        // Weather and Ambient Audio
+        Weather.setType(level.weather || 'none');
+        Audio.setAmbientVolume(0.5);
+
         // Reset game state
         playerBullets.releaseAll();
         enemyBullets.releaseAll();
@@ -461,6 +477,8 @@ const Game = (() => {
     function onBossKilled(boss) {
         Particles.bossExplode(boss.x, boss.y);
         Audio.victory();
+        Audio.setAmbientVolume(0);
+        Weather.setType('none');
 
         // Bonus score
         player.score += 2000;
