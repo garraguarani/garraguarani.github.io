@@ -147,7 +147,7 @@ class Enemy {
             Audio.cardToss();
         }
 
-        const bulletColor = this.projectileType === 'card' ? '#FFD700' : '#FF6644';
+        const bulletColor = this.projectileType === 'card' ? '#FF00FF' : CONFIG.COLORS.ENEMY_BULLET;
         const bWidth = this.projectileType === 'card' ? 8 : 4;
         const bHeight = this.projectileType === 'card' ? 12 : 4;
 

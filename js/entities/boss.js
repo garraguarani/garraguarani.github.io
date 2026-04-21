@@ -33,7 +33,7 @@ class Boss {
         
         // Progressive scaling based on level
         const levelIdx = window.Game ? window.Game.levelIndex : 0;
-        const scalar = 1 + (levelIdx * 0.15); // 15% bigger per level
+        const scalar = 1 + (levelIdx * 0.25); // 25% más grande por nivel (crecimiento más notorio)
         
         this.width = CONFIG.BOSS_WIDTH * scalar;
         this.height = CONFIG.BOSS_HEIGHT * scalar;
@@ -183,7 +183,7 @@ class Boss {
                 this.x, this.y + this.height / 2,
                 Math.cos(angle) * CONFIG.ENEMY_BULLET_SPEED,
                 Math.sin(angle) * CONFIG.ENEMY_BULLET_SPEED,
-                12, '#FF4444', { isEnemy: true, width: 5, height: 5 }
+                12, CONFIG.COLORS.ENEMY_BULLET, { isEnemy: true, width: 6, height: 6 }
             );
         }
     }
@@ -201,7 +201,7 @@ class Boss {
                 this.x + (Math.random() - 0.5) * 20, this.y + this.height / 2,
                 (dx / len) * CONFIG.ENEMY_BULLET_SPEED * 1.2,
                 (dy / len) * CONFIG.ENEMY_BULLET_SPEED * 1.2,
-                15, '#FFAA00', { isEnemy: true, width: 5, height: 5 }
+                15, CONFIG.COLORS.ENEMY_BULLET, { isEnemy: true, width: 6, height: 6 }
             );
         }
     }
@@ -215,7 +215,7 @@ class Boss {
                 this.x, this.y,
                 Math.cos(angle) * CONFIG.ENEMY_BULLET_SPEED * 0.8,
                 Math.sin(angle) * CONFIG.ENEMY_BULLET_SPEED * 0.8,
-                10, '#FF66FF', { isEnemy: true, width: 4, height: 4 }
+                10, CONFIG.COLORS.ENEMY_BULLET, { isEnemy: true, width: 6, height: 6 }
             );
         }
     }
@@ -229,7 +229,7 @@ class Boss {
                 this.x, this.y,
                 Math.cos(angle) * CONFIG.ENEMY_BULLET_SPEED * 0.7,
                 Math.sin(angle) * CONFIG.ENEMY_BULLET_SPEED * 0.7,
-                10, '#66FFFF', { isEnemy: true, width: 4, height: 4 }
+                10, CONFIG.COLORS.ENEMY_BULLET, { isEnemy: true, width: 6, height: 6 }
             );
         }
     }
@@ -243,7 +243,7 @@ class Boss {
                 this.x, this.y + this.height / 2,
                 Math.cos(angle) * CONFIG.ENEMY_BULLET_SPEED,
                 Math.sin(angle) * CONFIG.ENEMY_BULLET_SPEED,
-                12, '#FFFF44', { isEnemy: true, width: 5, height: 5 }
+                12, CONFIG.COLORS.ENEMY_BULLET, { isEnemy: true, width: 6, height: 6 }
             );
         }
     }

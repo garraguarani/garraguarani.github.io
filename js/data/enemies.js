@@ -40,10 +40,10 @@ const ENEMY_TYPES = {
     // --- NUEVOS: Hincha, Hincha2 y Árbitro ---
     hincha: {
         name: 'Hincha Fanático',
-        health: 3,
-        speed: 100,        // Más lento para que se entienda su movimiento
-        reward: 220,
-        width: 48,         // Más grande
+        health: 22,        // Mucho más resistente
+        speed: 100,
+        reward: 850,       // Recompensa acorde
+        width: 48,
         height: 60,
         damage: 25,
         defaultPattern: 'charge_player',
@@ -51,9 +51,9 @@ const ENEMY_TYPES = {
     },
     hincha2: {
         name: 'Hincha Ultras',
-        health: 4,
-        speed: 85,         // Aún más lento, más amenazador
-        reward: 280,
+        health: 32,        // Un tanque
+        speed: 85,
+        reward: 1200,      // Gran recompensa
         width: 48,
         height: 60,
         damage: 30,
@@ -62,11 +62,11 @@ const ENEMY_TYPES = {
     },
     arbitro: {
         name: 'Árbitro',
-        health: 6,
+        health: 28,        // Mucho más resistente
         speed: 80,
         shootRate: 1.5,
-        reward: 450,
-        width: 34,         // Más grande
+        reward: 1000,      // Gran recompensa
+        width: 34,
         height: 44,
         damage: 18,
         defaultPattern: 'horizontal_top',

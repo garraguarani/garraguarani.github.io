@@ -14,7 +14,11 @@ const LEVELS = [
         waves: [
             { enemies: [{ type: 'runner', x: 90 }, { type: 'hincha', x: 180 }, { type: 'runner', x: 270 }], spawnInterval: 0.8, pauseAfter: 2 },
             { enemies: [{ type: 'runner', x: 60 }, { type: 'arbitro', x: 180 }, { type: 'dribbler', x: 240 }], spawnInterval: 0.6, pauseAfter: 2 },
-            { enemies: [{ type: 'lateral', side: 'left' }, { type: 'hincha', x: 180 }, { type: 'lateral', side: 'right' }], spawnInterval: 0.5, pauseAfter: 2 }
+            { enemies: [{ type: 'lateral', side: 'left' }, { type: 'hincha', x: 180 }, { type: 'lateral', side: 'right' }], spawnInterval: 0.5, pauseAfter: 2 },
+            { enemies: [{ type: 'runner', x: 50 }, { type: 'runner', x: 150 }, { type: 'runner', x: 250 }, { type: 'runner', x: 310 }], spawnInterval: 0.4, pauseAfter: 2 },
+            { enemies: [{ type: 'arbitro', x: 120 }, { type: 'arbitro', x: 240 }], spawnInterval: 0.5, pauseAfter: 3 },
+            { enemies: [{ type: 'dribbler', x: 40 }, { type: 'dribbler', x: 140 }, { type: 'dribbler', x: 240 }], spawnInterval: 0.6, pauseAfter: 2 },
+            { enemies: [{ type: 'hincha', x: 100 }, { type: 'hincha', x: 260 }, { type: 'runner', x: 180 }], spawnInterval: 0.5, pauseAfter: 3 }
         ],
         boss: { name: 'Capitán USA', health: 600, phases: 3, patterns: ['spread', 'charge', 'burst'], weapon: 'basic' }
     },
@@ -28,7 +32,12 @@ const LEVELS = [
         subtitle: '19 de junio • San Francisco',
         waves: [
             { enemies: [{ type: 'runner', x: 100 }, { type: 'hincha', x: 200 }, { type: 'arbitro', x: 50 }], spawnInterval: 0.6, pauseAfter: 2 },
-            { enemies: [{ type: 'midfielder', x: 120 }, { type: 'hincha', x: 240 }, { type: 'lateral', side: 'left' }], spawnInterval: 0.5, pauseAfter: 2 }
+            { enemies: [{ type: 'midfielder', x: 120 }, { type: 'hincha', x: 240 }, { type: 'lateral', side: 'left' }], spawnInterval: 0.5, pauseAfter: 2 },
+            { enemies: [{ type: 'runner', x: 60 }, { type: 'midfielder', x: 180 }, { type: 'runner', x: 300 }], spawnInterval: 0.4, pauseAfter: 2 },
+            { enemies: [{ type: 'arbitro', x: 100 }, { type: 'arbitro', x: 260 }], spawnInterval: 0.3, pauseAfter: 3 },
+            { enemies: [{ type: 'dribbler', x: 50 }, { type: 'dribbler', x: 150 }, { type: 'dribbler', x: 250 }], spawnInterval: 0.5, pauseAfter: 2 },
+            { enemies: [{ type: 'hincha', x: 180 }, { type: 'runner', x: 80 }, { type: 'runner', x: 280 }], spawnInterval: 0.4, pauseAfter: 3 },
+            { enemies: [{ type: 'midfielder', x: 100 }, { type: 'midfielder', x: 200 }, { type: 'midfielder', x: 300 }], spawnInterval: 0.3, pauseAfter: 3 }
         ],
         boss: { name: 'Capitán Turquía', health: 1000, phases: 3, patterns: ['circular', 'shield', 'spiral'], weapon: 'curved' }
     },
@@ -42,7 +51,13 @@ const LEVELS = [
         subtitle: '25 de junio • San Francisco',
         waves: [
             { enemies: [{ type: 'runner', x: 70 }, { type: 'arbitro', x: 280 }, { type: 'hincha', x: 180 }], spawnInterval: 0.4, pauseAfter: 1.5 },
-            { enemies: [{ type: 'defender', x: 100 }, { type: 'hincha', x: 180 }, { type: 'defender', x: 260 }], spawnInterval: 0.5, pauseAfter: 2 }
+            { enemies: [{ type: 'defender', x: 100 }, { type: 'hincha', x: 180 }, { type: 'defender', x: 260 }], spawnInterval: 0.5, pauseAfter: 2 },
+            { enemies: [{ type: 'midfielder', x: 50 }, { type: 'midfielder', x: 150 }, { type: 'midfielder', x: 250 }], spawnInterval: 0.4, pauseAfter: 2 },
+            { enemies: [{ type: 'arbitro', x: 120 }, { type: 'arbitro', x: 240 }], spawnInterval: 0.2, pauseAfter: 3 },
+            { enemies: [{ type: 'defender', x: 180 }, { type: 'runner', x: 80 }, { type: 'runner', x: 280 }], spawnInterval: 0.3, pauseAfter: 2 },
+            { enemies: [{ type: 'hincha', x: 100 }, { type: 'hincha', x: 260 }], spawnInterval: 0.5, pauseAfter: 3 },
+            { enemies: [{ type: 'goalkeeper', x: 180 }, { type: 'runner', x: 100 }, { type: 'runner', x: 260 }], spawnInterval: 0.4, pauseAfter: 3 },
+            { enemies: [{ type: 'midfielder', x: 120 }, { type: 'midfielder', x: 240 }, { type: 'arbitro', x: 180 }], spawnInterval: 0.4, pauseAfter: 3 }
         ],
         boss: { name: 'Capitán Australia', health: 1400, phases: 3, patterns: ['diagonal', 'speed', 'burst'], weapon: 'water' }
     },
@@ -108,8 +123,8 @@ function _generateKnockoutWaves(waveCount, difficultyMult) {
     const waves = [];
     const types = ['runner', 'dribbler', 'lateral', 'midfielder', 'defender', 'goalkeeper', 'star', 'coach', 'hincha', 'arbitro'];
 
-    for (let w = 0; w < waveCount; w++) {
-        const enemyCount = Math.floor(4 + w * 1.2 * difficultyMult);
+    for (let w = 0; w < waveCount * 1.5; w++) {
+        const enemyCount = Math.floor(4 + w * 1.5 * difficultyMult);
         const enemies = [];
 
         for (let e = 0; e < enemyCount; e++) {
