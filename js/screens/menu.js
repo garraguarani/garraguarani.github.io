@@ -1,265 +1,122 @@
 /* ============================================
-   GARRA GUARANÍ — Menu Screen
-   Main menu drawn on canvas
+   GARRA GUARANÍ — Main Menu Screen
    ============================================ */
 
 const MenuScreen = (() => {
     let time = 0;
-    let selectedOption = 0;
-    let inputCooldown = 0;
-    const OPTIONS = ['JUGAR', 'CONTROLES', 'SONIDO: ON'];
-    let soundOn = true;
-    let bgmInitialized = false;
-    let audioContextStarted = false;
-
-    // Constantes de diseño para alineación perfecta
-    const OPTIONS_START_Y = 380;
-    const OPTIONS_SPACING = 55;
-    const BUTTON_WIDTH = 220;
-    const BUTTON_HEIGHT = 45;
+    
+    // Coordenadas fijas para hitboxes (centradas en el canvas de 360x640)
+    const BUTTONS = {
+        PLAY:     { x: 180, y: 380, w: 220, h: 50, label: 'JUGAR' },
+        CONTROLS: { x: 180, y: 445, w: 220, h: 50, label: 'CONTROLES' },
+        AUDIO:    { x: 180, y: 510, w: 220, h: 50, label: 'SONIDO: ON' }
+    };
 
     function update(dt) {
-        // Iniciar música de fondo con la primera interacción del usuario
-        if (!audioContextStarted) {
-            audioContextStarted = true;
-            try {
-                Audio.resume();
-                Audio.playBGM();
-            } catch (e) {
-                console.log('BGM play failed:', e);
-            }
-        }
-
         time += dt;
 
-        if (inputCooldown > 0) {
-            inputCooldown -= dt;
-        }
-
-        // Keyboard navigation
-        if (inputCooldown <= 0) {
-            if (Input.isKeyDown('ArrowDown') || Input.isKeyDown('KeyS')) {
-                selectedOption = (selectedOption + 1) % OPTIONS.length;
-                inputCooldown = 0.2;
-            } else if (Input.isKeyDown('ArrowUp') || Input.isKeyDown('KeyW')) {
-                selectedOption = (selectedOption - 1 + OPTIONS.length) % OPTIONS.length;
-                inputCooldown = 0.2;
+        if (Input.isTapActive()) {
+            const tap = Input.getTapPosition();
+            
+            if (_checkHit(tap, BUTTONS.PLAY)) {
+                return 'play';
+            }
+            if (_checkHit(tap, BUTTONS.CONTROLS)) {
+                return 'controls';
+            }
+            if (_checkHit(tap, BUTTONS.AUDIO)) {
+                const isEnabled = !CONFIG.AUDIO_ENABLED;
+                CONFIG.AUDIO_ENABLED = isEnabled;
+                BUTTONS.AUDIO.label = `SONIDO: ${isEnabled ? 'ON' : 'OFF'}`;
+                Audio.setEnabled(isEnabled);
+                Audio.menuSelect();
             }
         }
-
-        // Touch detection optimizada para mobile
-        if (Input.isTouching()) {
-            const pos = Input.getTouchGamePos();
-            if (pos) {
-                const W = CONFIG.GAME_WIDTH;
-                
-                for (let i = 0; i < OPTIONS.length; i++) {
-                    const btnY = OPTIONS_START_Y + i * OPTIONS_SPACING;
-                    // Detectar colisión con padding extra pero sin solaparse
-                    if (pos.x > W / 2 - BUTTON_WIDTH / 2 && 
-                        pos.x < W / 2 + BUTTON_WIDTH / 2 &&
-                        pos.y > btnY - BUTTON_HEIGHT / 2 && 
-                        pos.y < btnY + BUTTON_HEIGHT / 2) {
-                        
-                        if (i === 0) return 'play';
-                        if (i === 1) return 'controls';
-                        if (i === 2 && inputCooldown <= 0) {
-                            _toggleSound();
-                            inputCooldown = 0.3;
-                            return null;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Enter/Space to select
-        if (inputCooldown <= 0 && (Input.isKeyDown('Enter') || Input.isKeyDown('Space'))) {
-            inputCooldown = 0.3; // debounce
-            if (selectedOption === 0) return 'play';
-            if (selectedOption === 1) return 'controls';
-            if (selectedOption === 2) {
-                _toggleSound();
-            }
-        }
-
         return null;
     }
 
-    function _toggleSound() {
-        soundOn = !soundOn;
-        Audio.setEnabled(soundOn);
-        OPTIONS[2] = `SONIDO: ${soundOn ? 'ON' : 'OFF'}`;
-        Audio.menuSelect();
+    function _checkHit(tap, btn) {
+        return tap.x >= btn.x - btn.w/2 && 
+               tap.x <= btn.x + btn.w/2 && 
+               tap.y >= btn.y - btn.h/2 && 
+               tap.y <= btn.y + btn.h/2;
     }
 
     function draw(ctx) {
         const W = CONFIG.GAME_WIDTH;
         const H = CONFIG.GAME_HEIGHT;
 
-        // Background
-        Background.draw(ctx);
-
-        // Overlay
-        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        // --- Fondo base ---
+        ctx.fillStyle = CONFIG.COLORS.BG_DARK;
         ctx.fillRect(0, 0, W, H);
 
-        // Title: "GARRA"
-        const titleY = 100 + Math.sin(time * 2) * 3;
-        ctx.font = '28px "Press Start 2P"';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        // Title shadow
-        ctx.fillStyle = CONFIG.COLORS.PY_RED_DARK;
-        ctx.fillText('GARRA', W / 2 + 2, titleY + 2);
-        // Title
-        ctx.fillStyle = CONFIG.COLORS.PY_RED;
-        ctx.fillText('GARRA', W / 2, titleY);
-
-        // Subtitle: "GUARANI" (Blue)
-        ctx.font = '20px "Press Start 2P"';
-        ctx.fillStyle = '#0038A8'; // Blue for Guarani
-        ctx.fillText('GUARANI', W / 2, titleY + 40);
-
-        // White stripe between GARRA and GUARANI
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(W / 2 - 80, titleY + 18, 160, 4);
-
-        // --- Decorative Section: Trophy, Protagonist, Soccer Balls ---
-        const decorY = 200;
-
-        // Draw Copa del Mundo (Trophy) - stylized pixel art
-        _drawTrophy(ctx, W / 2, decorY, time);
-
-        // Floating soccer balls around trophy
-        _drawFloatingBalls(ctx, W, H, time);
-
-        // Protagonist image in the center (small, doesn't overlap title or buttons)
-        _drawProtagonist(ctx, W / 2, decorY + 60, time);
-
-        // Decorative line
-        ctx.strokeStyle = CONFIG.COLORS.PY_RED;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(60, 320);
-        ctx.lineTo(W - 60, 320);
-        ctx.stroke();
-
-        // Menu options alineadas con la lógica de update
-        ctx.font = '11px "Press Start 2P"';
-        for (let i = 0; i < OPTIONS.length; i++) {
-            const y = OPTIONS_START_Y + i * OPTIONS_SPACING;
-            const isSelected = i === selectedOption;
-
-            if (isSelected) {
-                // Selection indicator
-                const pulse = Math.sin(time * 6) * 0.3 + 0.7;
-                ctx.fillStyle = `rgba(206, 17, 38, ${pulse * 0.3})`;
-                ctx.fillRect(W/2 - BUTTON_WIDTH/2, y - BUTTON_HEIGHT/2, BUTTON_WIDTH, BUTTON_HEIGHT);
-                ctx.strokeStyle = CONFIG.COLORS.PY_RED;
-                ctx.lineWidth = 1;
-                ctx.strokeRect(W/2 - BUTTON_WIDTH/2, y - BUTTON_HEIGHT/2, BUTTON_WIDTH, BUTTON_HEIGHT);
-                ctx.fillStyle = CONFIG.COLORS.PY_GOLD;
-            } else {
-                ctx.fillStyle = CONFIG.COLORS.PY_WHITE;
-            }
-
+        // --- Arte Principal (Nuevo Protagonista) ---
+        const protaImg = Renderer.getImage('menu_prota');
+        if (protaImg) {
+            // Dibujar la imagen del protagonista centrada arriba de los botones
+            const imgW = 280;
+            const imgH = 280;
+            const imgX = W / 2 - imgW / 2;
+            const imgY = 60 + Math.sin(time * 2) * 10; // Suave flotación
+            ctx.drawImage(protaImg, imgX, imgY, imgW, imgH);
+        } else {
+            // Fallback: Logo de texto si no carga la imagen
+            ctx.fillStyle = CONFIG.COLORS.PY_RED;
+            ctx.font = '24px "Press Start 2P"';
             ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(OPTIONS[i], W / 2, y);
+            ctx.fillText('GARRA', W/2, 160);
+            ctx.fillStyle = CONFIG.COLORS.PY_WHITE;
+            ctx.fillText('GUARANÍ', W/2, 200);
         }
 
-        // Footer
+        // --- Subtítulo Mundial ---
+        ctx.font = '10px "Press Start 2P"';
+        ctx.fillStyle = CONFIG.COLORS.PY_GOLD;
+        ctx.textAlign = 'center';
+        ctx.fillText('WORLD CUP 2026', W/2, 280);
+
+        // --- Botones Mejorados ---
+        Object.values(BUTTONS).forEach(btn => {
+            _drawButton(ctx, btn);
+        });
+
+        // --- Footer ---
         ctx.font = '6px "Press Start 2P"';
         ctx.fillStyle = 'rgba(255,255,255,0.3)';
-        ctx.fillText('⚽ Toca para jugar ⚽', W / 2, H - 40);
-        ctx.fillText('v1.0 — Hecho con ❤️ GARRA GUARANI', W / 2, H - 20);
-
-        ctx.globalAlpha = 1;
+        ctx.fillText('© 2026 RETRATO AI', W/2, H - 20);
     }
 
-    // Draw Copa del Mundo trophy
-    function _drawTrophy(ctx, cx, cy, time) {
-        const pulse = Math.sin(time * 1.5) * 0.05 + 1;
-
+    function _drawButton(ctx, btn) {
+        const isPressed = false; // Implementar estado visual si se desea
+        
         ctx.save();
-        ctx.translate(cx, cy);
-        ctx.scale(pulse, pulse);
+        ctx.translate(btn.x, btn.y);
 
-        // Trophy base
-        ctx.fillStyle = '#D4AF37'; // Gold
-        ctx.fillRect(-20, 40, 40, 8);
-        ctx.fillRect(-15, 48, 30, 6);
+        // Sombras y bordes
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.fillRect(-btn.w/2 + 4, -btn.h/2 + 4, btn.w, btn.h);
 
-        // Trophy stem
-        ctx.fillRect(-8, 25, 16, 15);
+        // Cuerpo del botón
+        const grad = ctx.createLinearGradient(0, -btn.h/2, 0, btn.h/2);
+        grad.addColorStop(0, '#CE1126');
+        grad.addColorStop(1, '#8B0000');
+        ctx.fillStyle = grad;
+        ctx.fillRect(-btn.w/2, -btn.h/2, btn.w, btn.h);
 
-        // Trophy cup body
-        ctx.fillStyle = '#FFD700'; // Bright gold
-        ctx.fillRect(-25, -10, 50, 35);
+        // Borde dorado
+        ctx.strokeStyle = CONFIG.COLORS.PY_GOLD;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(-btn.w/2, -btn.h/2, btn.w, btn.h);
 
-        // Cup inner (darker for depth)
-        ctx.fillStyle = '#B8860B';
-        ctx.fillRect(-18, -5, 36, 25);
-
-        // Trophy top (globe hint)
-        ctx.fillStyle = '#FFD700';
-        ctx.beginPath();
-        ctx.arc(0, -10, 12, Math.PI, 0);
-        ctx.fill();
-
-        // Sparkle effect
-        if (Math.sin(time * 4) > 0.5) {
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(15, -20, 3, 3);
-            ctx.fillRect(-18, -15, 2, 2);
-        }
+        // Texto
+        ctx.fillStyle = CONFIG.COLORS.PY_WHITE;
+        ctx.font = '12px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(btn.label, 0, 0);
 
         ctx.restore();
     }
 
-    // Draw floating soccer balls
-    function _drawFloatingBalls(ctx, W, H, time) {
-        const balls = [
-            { x: W * 0.15, y: H * 0.35, offset: 0 },
-            { x: W * 0.85, y: H * 0.30, offset: 1 },
-            { x: W * 0.20, y: H * 0.50, offset: 2 },
-            { x: W * 0.80, y: H * 0.48, offset: 3 }
-        ];
-
-        ctx.font = '20px serif';
-        for (const ball of balls) {
-            const floatY = ball.y + Math.sin(time * 2 + ball.offset) * 8;
-            ctx.globalAlpha = 0.3 + Math.sin(time * 1.5 + ball.offset) * 0.1;
-            ctx.fillText('⚽', ball.x, floatY);
-        }
-        ctx.globalAlpha = 1;
-    }
-
-    // Draw protagonist image
-    function _drawProtagonist(ctx, cx, cy, time) {
-        const img = Renderer.getImage('protagonist');
-        if (img) {
-            const size = 48; // Small size to not overlap title or buttons
-            const glow = Math.sin(time * 3) * 0.1 + 0.4;
-
-            // Glow effect
-            ctx.shadowColor = CONFIG.COLORS.PY_GOLD;
-            ctx.shadowBlur = 15 + glow * 10;
-
-            // Draw centered
-            ctx.drawImage(img, cx - size / 2, cy - size / 2, size, size);
-
-            ctx.shadowBlur = 0;
-        } else {
-            // Fallback: draw emoji if image not loaded
-            ctx.font = '32px serif';
-            ctx.globalAlpha = 0.5;
-            ctx.fillText('🦸', cx, cy);
-            ctx.globalAlpha = 1;
-        }
-    }
-
-    return { update, draw };
+    return { draw, update };
 })();
