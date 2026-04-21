@@ -1,7 +1,7 @@
 /* ============================================
-   GARRA GUARANÍ — Audio System 3.0
-   Engine sintético de 3 capas
-   Melodía + Arpeggio + Bajo + Pad + Percusión
+   GARRA GUARANÍ — Audio System 4.0
+   Motor de 5 capas, tema de inicio épico
+   Inspirado en ISS Deluxe / SFII
    ============================================ */
 
 const Audio = (() => {
@@ -27,19 +27,15 @@ const Audio = (() => {
         ambientGain = ctx.createGain();
         ambientGain.gain.setValueAtTime(0, ctx.currentTime);
         ambientGain.connect(ctx.destination);
-        const bufferSize = ctx.sampleRate * 2;
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-        const source = ctx.createBufferSource();
-        source.buffer = buffer;
-        source.loop = true;
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(400, ctx.currentTime);
-        source.connect(filter);
-        filter.connect(ambientGain);
-        source.start();
+        const sz = ctx.sampleRate * 2;
+        const buf = ctx.createBuffer(1, sz, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < sz; i++) d[i] = Math.random() * 2 - 1;
+        const src = ctx.createBufferSource();
+        src.buffer = buf; src.loop = true;
+        const flt = ctx.createBiquadFilter();
+        flt.type = 'lowpass'; flt.frequency.value = 400;
+        src.connect(flt); flt.connect(ambientGain); src.start();
     }
 
     function setAmbientVolume(vol) {
@@ -51,144 +47,166 @@ const Audio = (() => {
         if (ctx && ctx.state === 'suspended') ctx.resume();
     }
 
+    /* Genera un tono simple */
     function _note(freq, dur, type = 'triangle', vol = 0.1, delay = 0) {
-        if (!enabled || !ctx) return;
+        if (!enabled || !ctx || freq <= 0) return;
         try {
             const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
+            const g = ctx.createGain();
             osc.type = type;
-            osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
-            gain.gain.setValueAtTime(0, ctx.currentTime + delay);
-            gain.gain.linearRampToValueAtTime(vol * masterVolume, ctx.currentTime + delay + 0.01);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
+            osc.frequency.value = freq;
+            g.gain.setValueAtTime(0, ctx.currentTime + delay);
+            g.gain.linearRampToValueAtTime(vol * masterVolume, ctx.currentTime + delay + 0.008);
+            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
+            osc.connect(g); g.connect(ctx.destination);
             osc.start(ctx.currentTime + delay);
             osc.stop(ctx.currentTime + delay + dur + 0.05);
         } catch(e) {}
     }
 
+    /* Genera ruido filtrado (percusión) */
     function _noise(dur, vol = 0.1, filterFreq = 800, delay = 0) {
         if (!enabled || !ctx) return;
         try {
-            const size = Math.max(1, Math.floor(ctx.sampleRate * dur));
-            const buffer = ctx.createBuffer(1, size, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < size; i++) data[i] = Math.random() * 2 - 1;
-            const source = ctx.createBufferSource();
-            source.buffer = buffer;
-            const filt = ctx.createBiquadFilter();
-            filt.frequency.setValueAtTime(filterFreq, ctx.currentTime);
-            const gain = ctx.createGain();
-            gain.gain.setValueAtTime(vol * masterVolume, ctx.currentTime + delay);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
-            source.connect(filt);
-            filt.connect(gain);
-            gain.connect(ctx.destination);
-            source.start(ctx.currentTime + delay);
+            const sz = Math.max(1, Math.floor(ctx.sampleRate * dur));
+            const buf = ctx.createBuffer(1, sz, ctx.sampleRate);
+            const d = buf.getChannelData(0);
+            for (let i = 0; i < sz; i++) d[i] = Math.random() * 2 - 1;
+            const src = ctx.createBufferSource();
+            src.buffer = buf;
+            const flt = ctx.createBiquadFilter();
+            flt.frequency.value = filterFreq;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(vol * masterVolume, ctx.currentTime + delay);
+            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
+            src.connect(flt); flt.connect(g); g.connect(ctx.destination);
+            src.start(ctx.currentTime + delay);
         } catch(e) {}
     }
 
-    // =========================================
-    // MELODÍAS (3 capas por tipo)
-    // =========================================
+    // =====================================================
+    // MELODÍAS
+    // =====================================================
 
-    // -- MENU: Himno épico en C mayor, 128 BPM --
-    // Cada paso es una corchea (1/8 note)
-    // step = [freq, durInSteps]
-    const MENU_MELODY = [
-        [523, 2], [587, 1], [659, 1], [698, 2], [659, 2],
-        [523, 1], [587, 1], [659, 2], [523, 4],
-        [659, 2], [698, 1], [784, 1], [880, 4],
-        [784, 2], [698, 1], [659, 1], [523, 4]
-    ];
+    /**
+     * MENU — Anthem épico 150 BPM, escala de E menor
+     * Inspirado en ISS Deluxe / Football anthems
+     * Cada entrada: [frecuencia, pasos en 16vas]
+     * (stepDur = 1 paso = una semicorchea = 60/BPM/4)
+     */
+    const MENU_LEAD = [
+        // Frase 1: arranque explosivo
+        [330,2],[370,2],[415,2],[370,2],
+        [494,2],[440,2],[415,4],
+        // Frase 2: subida y grito
+        [494,2],[523,2],[587,2],[659,2],
+        [784,4],[659,4],
+        // Frase 3: respuesta bajando
+        [587,2],[523,2],[494,2],[440,2],
+        [415,2],[370,2],[330,4],
+        // Frase 4: remate final
+        [415,2],[494,2],[587,2],[523,2],
+        [659,4],[784,4],[0,4]
+    ]; // total = 48 steps
 
     const MENU_BASS = [
-        [131, 4], [165, 4], [196, 4], [131, 4],
-        [131, 4], [165, 4], [196, 4], [165, 4]
-    ];
+        // I - VII - VI - VII (Em - D - C - D)  
+        [82,8],[98,8],[131,8],[98,8], // a
+        [82,8],[73,8],[98,8],[82,8]  // b
+    ]; // total = 64 steps → loop diferente al lead (poliritmia natural)
 
-    // Arpeggio alternado: C-E-G / A-C-E / F-A-C / G-B-D
+    // Counter-melody / arpeggio en 16vas sobre los acordes
     const MENU_ARP = [
-        262, 330, 392, 220, 262, 330,
-        175, 220, 262, 196, 247, 294,
-        262, 330, 392, 220, 262, 330,
-        175, 220, 262, 247, 294, 330
+        165,196,247,196, 220,261,330,261, // Am arp
+        196,247,294,247, 220,261,330,220, // bm arp
+        175,220,261,220, 196,247,294,247, // C arp
+        196,261,330,261, 247,294,370,294  // D arp
+    ]; // 32 notas = 32 steps
+
+    // Acordes de pad (pad largo, 4 notas cada 8 pasos)
+    const MENU_CHORDS = [
+        [164,196,247],  // Am/C
+        [196,247,294],  // Bm (paso a D)
+        [175,220,261],  // C
+        [196,247,330],  // D
     ];
 
-    // -- LEVEL: Metal urgente en E menor, 170 BPM --
-    const LEVEL_MELODY = [
-        [659, 1], [659, 1], [784, 1], [659, 1], [880, 2], [831, 2],
-        [698, 1], [698, 1], [784, 1], [698, 1], [988, 2], [880, 2],
-        [659, 1], [0, 1], [659, 1], [784, 1], [659, 2], [0, 2],
-        [523, 1], [587, 1], [659, 2], [587, 1], [523, 4]
-    ];
+    /**
+     * LEVEL — Metal urgente 172 BPM, escala de E frigio
+     */
+    const LEVEL_LEAD = [
+        [659,1],[659,1],[784,1],[659,1],[0,1],[831,1],[784,2],
+        [698,1],[698,1],[784,1],[698,1],[0,1],[988,1],[880,2],
+        [659,1],[0,1],[659,1],[784,1],[659,2],[523,2],
+        [659,2],[587,2],[523,2],[587,4]
+    ]; // 28 steps
 
     const LEVEL_BASS = [
-        [82, 2], [82, 2], [98, 2], [82, 2],
-        [110, 2], [98, 2], [82, 4],
-        [82, 2], [82, 2], [73, 2], [82, 4]
-    ];
+        [82,4],[82,2],[98,2],[110,4],[98,4],
+        [82,4],[73,4],[82,8]
+    ]; // 32 steps
 
     function _bgmLoop(type) {
         if (!isPlayingBgm || !ctx) return;
-
         const isMenu = type === 'menu';
-        const BPM = isMenu ? 128 : 170;
-        const eighth = (60 / BPM) / 2; // duración de una corchea en segundos
+        const BPM = isMenu ? 150 : 172;
+        const step = 60 / BPM / 4; // duración de 1 semicorchea en segundos
 
-        const melody = isMenu ? MENU_MELODY : LEVEL_MELODY;
-        const bass   = isMenu ? MENU_BASS   : LEVEL_BASS;
-
-        // ---- CAPA 1: Melodía principal ----
-        let tLead = 0;
-        for (const [freq, steps] of melody) {
-            const dur = eighth * steps;
-            if (freq > 0) _note(freq, dur * 0.85, isMenu ? 'triangle' : 'square', isMenu ? 0.07 : 0.08, tLead);
-            tLead += dur;
+        // ----- CAPA 1: Melodía lead -----
+        const lead = isMenu ? MENU_LEAD : LEVEL_LEAD;
+        let t = 0;
+        for (const [freq, steps] of lead) {
+            const dur = step * steps;
+            if (freq > 0) {
+                _note(freq, dur * 0.80, isMenu ? 'square' : 'sawtooth',
+                      isMenu ? 0.07 : 0.08, t);
+            }
+            t += dur;
         }
+        const loopDur = t; // duración real del loop
 
-        // ---- CAPA 2: Bajo ----
-        let tBass = 0;
+        // ----- CAPA 2: Bajo -----
+        const bass = isMenu ? MENU_BASS : LEVEL_BASS;
+        let tb = 0;
         for (const [freq, steps] of bass) {
-            const dur = eighth * steps;
-            _note(freq, dur * 0.7, 'triangle', isMenu ? 0.10 : 0.14, tBass);
-            // sub-bass con sawtooth
-            _note(freq, dur * 0.5, 'sawtooth', isMenu ? 0.04 : 0.06, tBass + 0.01);
-            tBass += dur;
+            const dur = step * steps;
+            _note(freq,       dur * 0.7, 'triangle', isMenu ? 0.11 : 0.14, tb);
+            _note(freq * 0.5, dur * 0.4, 'sawtooth', isMenu ? 0.04 : 0.06, tb + 0.01);
+            tb += dur;
+            if (tb >= loopDur) break; // no sobrepasar el loop
         }
 
-        // ---- CAPA 3: Arpeggio (solo menu) ----
+        // ----- CAPA 3: Arpeggio de 16vas (solo menu) -----
         if (isMenu) {
-            for (let i = 0; i < MENU_ARP.length; i++) {
-                _note(MENU_ARP[i], eighth * 0.4, 'sine', 0.04, i * eighth);
+            for (let i = 0; i < MENU_ARP.length && i * step < loopDur; i++) {
+                const freq = MENU_ARP[i];
+                _note(freq, step * 0.45, 'sine', 0.035, i * step);
             }
         }
 
-        // ---- CAPA 4: Pad envolvente (solo menu) ----
+        // ----- CAPA 4: Pad armónico (solo menu) -----
         if (isMenu) {
-            // Acorde C-E-G suave y largo
-            const padFreqs = [262, 330, 392];
-            const padDur = eighth * MENU_ARP.length;
-            for (const f of padFreqs) {
-                _note(f, padDur * 0.95, 'sine', 0.025);
+            for (let ci = 0; ci < MENU_CHORDS.length; ci++) {
+                const chordTime = ci * step * 8;
+                if (chordTime >= loopDur) break;
+                const chordDur = step * 7.5;
+                for (const f of MENU_CHORDS[ci]) {
+                    _note(f, chordDur, 'sine', 0.022, chordTime);
+                }
             }
         }
 
-        // ---- CAPA 5: Percusión ----
-        const totalSteps = isMenu ? MENU_ARP.length : 16;
+        // ----- CAPA 5: Percusión -----
+        const totalSteps = Math.round(loopDur / step);
         for (let i = 0; i < totalSteps; i++) {
-            const t = i * eighth;
-            // Kick en tiempos 1 y 3
-            if (i % 4 === 0) _noise(0.12, isMenu ? 0.06 : 0.09, 120, t);
-            // Snare en tiempos 2 y 4
-            if (i % 4 === 2) _noise(0.10, isMenu ? 0.04 : 0.07, 2000, t);
-            // Hi-hat en todos
-            if (!isMenu && i % 2 === 1) _noise(0.04, 0.02, 8000, t);
+            const pt = i * step;
+            if (i % 8 === 0)                        _noise(0.14, isMenu ? 0.07 : 0.10, 100,  pt); // Kick
+            if (i % 8 === 4)                        _noise(0.12, isMenu ? 0.05 : 0.08, 2500, pt); // Snare
+            if (!isMenu && i % 2 === 1)             _noise(0.04, 0.025, 9000, pt);               // Hi-hat nivel
+            if (isMenu && i % 16 === 12)            _noise(0.06, 0.035, 6000, pt);               // Open hi-hat menu
         }
 
-        const loopDuration = eighth * totalSteps * 1000;
-        bgmTimer = setTimeout(() => _bgmLoop(type), loopDuration);
+        bgmTimer = setTimeout(() => _bgmLoop(type), loopDur * 1000);
     }
 
     function playBGM(type = 'menu') {
@@ -204,23 +222,23 @@ const Audio = (() => {
         if (bgmTimer) { clearTimeout(bgmTimer); bgmTimer = null; }
     }
 
-    // =========================================
+    // =====================================================
     // SFX
-    // =========================================
+    // =====================================================
     function shoot()      { _note(1046, 0.05, 'square', 0.09); }
-    function enemyHit()   { _note(185, 0.07, 'sawtooth', 0.11); }
+    function enemyHit()   { _note(185,  0.07, 'sawtooth', 0.11); }
     function enemyDie()   { _noise(0.18, 0.18, 500); }
     function playerHit()  { _noise(0.28, 0.30, 150); }
     function powerup()    { _note(880, 0.08, 'sine', 0.13); _note(1100, 0.13, 'sine', 0.12, 0.07); }
     function coinPickup() { _note(1320, 0.05, 'sine', 0.18); _note(1760, 0.08, 'sine', 0.14, 0.05); }
-    function menuSelect() { _note(700, 0.04, 'square', 0.09); }
+    function menuSelect() { _note(700,  0.04, 'square', 0.09); }
     function gameOver()   { stopBGM(); _note(150, 0.6, 'sawtooth', 0.28); }
     function victory()    { playBGM('menu'); }
 
     function bossAppear() {
-        _note(80,  1.5, 'sawtooth', 0.28);
-        _note(100, 1.2, 'sawtooth', 0.18, 0.1);
-        _noise(0.5, 0.18, 180);
+        _note(80,  1.4, 'sawtooth', 0.28);
+        _note(120, 1.0, 'sawtooth', 0.16, 0.15);
+        _noise(0.5, 0.18, 160);
     }
 
     function garraActivate() {
@@ -238,13 +256,13 @@ const Audio = (() => {
     function hinchaCharge() {
         try {
             const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
+            const g = ctx.createGain();
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(120, ctx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.45);
-            gain.gain.setValueAtTime(0.14 * masterVolume, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.45);
-            osc.connect(gain); gain.connect(ctx.destination);
+            g.gain.setValueAtTime(0.14 * masterVolume, ctx.currentTime);
+            g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.45);
+            osc.connect(g); g.connect(ctx.destination);
             osc.start(); osc.stop(ctx.currentTime + 0.5);
         } catch(e) {}
     }
