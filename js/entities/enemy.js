@@ -182,7 +182,7 @@ class Enemy {
             return;
         }
 
-        // --- Dibujado de Sprite: SIN rotación, parado derecho ---
+        // --- Dibujado de Sprite: Rotación de 180 grados, parado derecho ---
         let img = null;
         if (this.type === 'arbitro') {
             img = Renderer.getImage('arbitro');
@@ -200,8 +200,13 @@ class Enemy {
             ctx.beginPath();
             ctx.ellipse(cx, cy + h / 2 + 2, w / 3, h / 7, 0, 0, Math.PI * 2);
             ctx.fill();
-            // Sprite directo, sin rotación
-            ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
+
+            // Rotación de 180 grados para que el personaje aparezca parado derecho
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(Math.PI);
+            ctx.drawImage(img, -w / 2, -h / 2, w, h);
+            ctx.restore();
         } else {
             this._drawProcedural(ctx, cx, cy, w, h);
         }

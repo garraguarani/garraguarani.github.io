@@ -286,11 +286,15 @@ class Boss {
             ctx.ellipse(cx, cy + h / 2 + 4, w / 2, h / 5, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Sprite derecho (SIN rotación)
+            // Rotación de 180 grados para que el jefe aparezca parado derecho
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(Math.PI);
             if (this.flashTimer > 0) {
                 ctx.globalAlpha = 0.5 + Math.sin(this.time * 30) * 0.5;
             }
-            ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
+            ctx.drawImage(img, -w / 2, -h / 2, w, h);
+            ctx.restore();
             ctx.globalAlpha = 1;
         } else {
             this._drawProcedural(ctx, cx, cy, w, h);

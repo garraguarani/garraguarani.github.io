@@ -43,8 +43,8 @@ const ENEMY_TYPES = {
         health: 3,
         speed: 100,        // Más lento para que se entienda su movimiento
         reward: 220,
-        width: 34,         // Más grande
-        height: 42,
+        width: 48,         // Más grande
+        height: 60,
         damage: 25,
         defaultPattern: 'charge_player',
         isSpecial: true
@@ -54,8 +54,8 @@ const ENEMY_TYPES = {
         health: 4,
         speed: 85,         // Aún más lento, más amenazador
         reward: 280,
-        width: 34,
-        height: 42,
+        width: 48,
+        height: 60,
         damage: 30,
         defaultPattern: 'charge_player',
         isSpecial: true
