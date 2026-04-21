@@ -1,13 +1,13 @@
 /* ============================================
    GARRA GUARANÍ — Enemy Types Data
-   Balanced for v16 (Early game accessible, late game extreme)
+   Balanced for v17 (Smart balance, restored sizes)
    ============================================ */
 
 const ENEMY_TYPES = {
     // --- Basic ---
     runner: {
         name: 'Corredor',
-        health: 2,         // 2 shots to kill at L1 ( tutorial )
+        health: 6,         // 6 shots at L1 (Challenging start)
         speed: 120,
         shootRate: 1.4,
         reward: 100,
@@ -19,7 +19,7 @@ const ENEMY_TYPES = {
     },
     dribbler: {
         name: 'Driblador',
-        health: 2,         // 2 shots
+        health: 6,         
         speed: 100,
         shootRate: 0,
         reward: 150,
@@ -30,7 +30,7 @@ const ENEMY_TYPES = {
     },
     lateral: {
         name: 'Lateral',
-        health: 2,         // 2 shots
+        health: 6,         
         speed: 140,
         shootRate: 1.8,
         reward: 120,
@@ -44,24 +44,24 @@ const ENEMY_TYPES = {
     // --- Mid-Bosses (Appear in waves) ---
     hincha: {
         name: 'Hincha Loco',
-        health: 4,         // 4 shots at L1
-        speed: 110,
+        health: 12,        // Mini-boss feel
+        speed: 100,
         shootRate: 1.5,
         reward: 250,
-        width: 22,
-        height: 26,
+        width: 48,         // RESTORED SIZE
+        height: 60,        // RESTORED SIZE
         damage: 15,
         defaultPattern: 'zigzag',
         bulletColor: '#FFD700' // Amarillo Brillante
     },
     arbitro: {
         name: 'Santi el Árbitro',
-        health: 4,         // 4 shots at L1
-        speed: 100,
+        health: 12,        // Mini-boss feel
+        speed: 80,
         shootRate: 1.2,
         reward: 350,
-        width: 22,
-        height: 30,
+        width: 34,         // RESTORED SIZE
+        height: 44,        // RESTORED SIZE
         damage: 25,
         defaultPattern: 'straight',
         projectileType: 'card',
@@ -71,7 +71,7 @@ const ENEMY_TYPES = {
     // --- Intermediate ---
     defender: {
         name: 'Defensor',
-        health: 5,         // tanky at L1
+        health: 10,        
         speed: 60,
         shootRate: 2.2,
         reward: 300,
@@ -83,7 +83,7 @@ const ENEMY_TYPES = {
     },
     midfielder: {
         name: 'Mediocampista',
-        health: 4,
+        health: 8,
         speed: 85,
         shootRate: 0.9,
         reward: 250,
@@ -95,7 +95,7 @@ const ENEMY_TYPES = {
     },
     goalkeeper: {
         name: 'Portero',
-        health: 6,
+        health: 15,
         speed: 50,
         shootRate: 1.2,
         reward: 350,
@@ -109,7 +109,7 @@ const ENEMY_TYPES = {
     // --- Advanced ---
     star: {
         name: '10 Rival',
-        health: 5,
+        health: 10,
         speed: 130,
         shootRate: 0.5,
         reward: 500,
@@ -121,7 +121,7 @@ const ENEMY_TYPES = {
     },
     coach: {
         name: 'Director Técnico',
-        health: 8,
+        health: 18,
         speed: 70,
         shootRate: 1.5,
         reward: 600,
