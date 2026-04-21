@@ -1,7 +1,7 @@
 /* ============================================
-   GARRA GUARANÍ — Audio System 2.1
+   GARRA GUARANÍ — Audio System 2.2
    16-bit Professional Synthetic Engine
-   Improved robustness & missed effects fix
+   Improved Menu Audio (Soft waveforms)
    ============================================ */
 
 const Audio = (() => {
@@ -77,15 +77,21 @@ const Audio = (() => {
     }
 
     function _playBass(freq, duration, volume = 0.2) {
+        // Softer bass for menu if needed, but keeping for level
         _playTone(freq, duration, 'triangle', volume * 1.5, 0);
         _playTone(freq, duration * 0.8, 'sawtooth', volume * 0.5, 5);
     }
 
     const MELODIES = {
         menu: {
-            tempo: 155,
-            lead: [[261, 8], [329, 8], [392, 8], [523, 4], [0, 8], [392, 8], [329, 8], [261, 4]],
-            bass: [[130, 4], [130, 8], [130, 8], [164, 4], [196, 4]],
+            tempo: 130, // Relaxed tempo
+            lead: [
+                [261, 8], [293, 8], [329, 8], [349, 8], [392, 4], [0, 8], [349, 8], [329, 4]
+            ],
+            bass: [
+                [130, 4], [146, 8], [130, 8], [110, 4], [123, 4]
+            ],
+            type: 'triangle' // Much softer than square
         },
         level: { 
             tempo: 170,
@@ -97,7 +103,8 @@ const Audio = (() => {
                 [98, 8], [98, 8], [110, 8], [98, 8], [130, 8], [123, 8],
                 [98, 8], [98, 8], [110, 8], [98, 8], [146, 8], [130, 8]
             ],
-            drums: [true, false, true, false, true, false, true, false]
+            drums: [true, false, true, false, true, false, true, false],
+            type: 'square' // Fast & exciting for gameplay
         }
     };
 
@@ -113,16 +120,22 @@ const Audio = (() => {
             if (!isPlayingBgm) return;
             
             const stepDuration = (60 / melody.tempo) / 4;
+            const waveType = melody.type || 'square';
+            
             if (melody.lead) {
                 const note = melody.lead[step % melody.lead.length];
-                if (note[0] > 0) _playTone(note[0], stepDuration * (16/note[1]), 'square', 0.08);
+                if (note[0] > 0) _playTone(note[0], stepDuration * (16/note[1]), waveType, 0.08);
             }
             if (melody.bass) {
                 const bNote = melody.bass[step % melody.bass.length];
-                if (bNote[0] > 0) _playBass(bNote[0], stepDuration * (16/bNote[1]), 0.12);
+                if (bNote[0] > 0) {
+                    const bassType = type === 'menu' ? 'triangle' : 'sawtooth';
+                    _playTone(bNote[0], stepDuration * (16/bNote[1]), bassType, 0.1);
+                }
             }
             if (melody.drums && melody.drums[step % melody.drums.length]) {
-                _playNoise(0.04, 0.05, 1000);
+                const noiseVol = type === 'menu' ? 0.02 : 0.04;
+                _playNoise(0.04, noiseVol, 1500);
             }
             step++;
             bgmTimer = setTimeout(nextStep, stepDuration * 1000);
@@ -155,7 +168,6 @@ const Audio = (() => {
         } catch(e){}
     }
 
-    // --- SFX Fixes & Completion ---
     function shoot() { _playTone(1000, 0.05, 'square', 0.1); }
     function enemyHit() { _playTone(180, 0.07, 'sawtooth', 0.12); }
     function enemyDie() { _playNoise(0.2, 0.2, 500); }
@@ -165,11 +177,7 @@ const Audio = (() => {
     function victory() { playBGM('menu'); }
     function gameOver() { stopBGM(); _playTone(150, 0.6, 'sawtooth', 0.3); }
     function menuSelect() { _playTone(700, 0.05, 'square', 0.1); }
-    
-    function bossAppear() {
-        _playTone(100, 1.5, 'sawtooth', 0.3);
-        _playNoise(0.5, 0.2, 200);
-    }
+    function bossAppear() { _playTone(100, 1.5, 'sawtooth', 0.3); _playNoise(0.5, 0.2, 200); }
     
     function garraActivate() {
         _playTone(100, 0.5, 'sawtooth', 0.3, 0, false);
