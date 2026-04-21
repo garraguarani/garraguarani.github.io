@@ -12,6 +12,12 @@ const MenuScreen = (() => {
     let bgmInitialized = false;
     let audioContextStarted = false;
 
+    // Constantes de diseño para alineación perfecta
+    const OPTIONS_START_Y = 380;
+    const OPTIONS_SPACING = 55;
+    const BUTTON_WIDTH = 220;
+    const BUTTON_HEIGHT = 45;
+
     function update(dt) {
         // Iniciar música de fondo con la primera interacción del usuario
         if (!audioContextStarted) {
@@ -41,28 +47,31 @@ const MenuScreen = (() => {
             }
         }
 
-        // Touch detection
-if (Input.isTouching()) {
-    const pos = Input.getTouchGamePos();
-    if (pos) {
-        // Check "JUGAR" button area
-        if (pos.y > 325 && pos.y < 355 && pos.x > 80 && pos.x < 280) {
-            return 'play';
+        // Touch detection optimizada para mobile
+        if (Input.isTouching()) {
+            const pos = Input.getTouchGamePos();
+            if (pos) {
+                const W = CONFIG.GAME_WIDTH;
+                
+                for (let i = 0; i < OPTIONS.length; i++) {
+                    const btnY = OPTIONS_START_Y + i * OPTIONS_SPACING;
+                    // Detectar colisión con padding extra pero sin solaparse
+                    if (pos.x > W / 2 - BUTTON_WIDTH / 2 && 
+                        pos.x < W / 2 + BUTTON_WIDTH / 2 &&
+                        pos.y > btnY - BUTTON_HEIGHT / 2 && 
+                        pos.y < btnY + BUTTON_HEIGHT / 2) {
+                        
+                        if (i === 0) return 'play';
+                        if (i === 1) return 'controls';
+                        if (i === 2 && inputCooldown <= 0) {
+                            _toggleSound();
+                            inputCooldown = 0.3;
+                            return null;
+                        }
+                    }
+                }
+            }
         }
-        // Check "CONTROLES" button area
-        if (pos.y > 375 && pos.y < 405 && pos.x > 80 && pos.x < 280) {
-            return 'controls';
-        }
-        // Check "SONIDO" button area
-        if (pos.y > 425 && pos.y < 455 && pos.x > 80 && pos.x < 280) {
-            soundOn = !soundOn;
-            Audio.setEnabled(soundOn);
-            OPTIONS[2] = `SONIDO: ${soundOn ? 'ON' : 'OFF'}`;
-            Audio.menuSelect();
-            return null;
-        }
-    }
-}
 
         // Enter/Space to select
         if (inputCooldown <= 0 && (Input.isKeyDown('Enter') || Input.isKeyDown('Space'))) {
@@ -70,13 +79,18 @@ if (Input.isTouching()) {
             if (selectedOption === 0) return 'play';
             if (selectedOption === 1) return 'controls';
             if (selectedOption === 2) {
-                soundOn = !soundOn;
-                Audio.setEnabled(soundOn);
-                OPTIONS[2] = `SONIDO: ${soundOn ? 'ON' : 'OFF'}`;
+                _toggleSound();
             }
         }
 
         return null;
+    }
+
+    function _toggleSound() {
+        soundOn = !soundOn;
+        Audio.setEnabled(soundOn);
+        OPTIONS[2] = `SONIDO: ${soundOn ? 'ON' : 'OFF'}`;
+        Audio.menuSelect();
     }
 
     function draw(ctx) {
@@ -115,11 +129,15 @@ if (Input.isTouching()) {
         // --- Decorative Section: Trophy, Protagonist, Soccer Balls ---
         const decorY = 200;
 
-       // Floating soccer balls
-_drawFloatingBalls(ctx, W, H, time);
+        // Draw Copa del Mundo (Trophy) - stylized pixel art
+        _drawTrophy(ctx, W / 2, decorY, time);
 
-// Imagen protagonista inicio
-_drawProtagonistInicio(ctx, W / 2, decorY + 40, time);
+        // Floating soccer balls around trophy
+        _drawFloatingBalls(ctx, W, H, time);
+
+        // Protagonist image in the center (small, doesn't overlap title or buttons)
+        _drawProtagonist(ctx, W / 2, decorY + 60, time);
+
         // Decorative line
         ctx.strokeStyle = CONFIG.COLORS.PY_RED;
         ctx.lineWidth = 2;
@@ -128,26 +146,27 @@ _drawProtagonistInicio(ctx, W / 2, decorY + 40, time);
         ctx.lineTo(W - 60, 320);
         ctx.stroke();
 
-        // Menu options
+        // Menu options alineadas con la lógica de update
         ctx.font = '11px "Press Start 2P"';
         for (let i = 0; i < OPTIONS.length; i++) {
-            const y = 360 + i * 50;
+            const y = OPTIONS_START_Y + i * OPTIONS_SPACING;
             const isSelected = i === selectedOption;
 
             if (isSelected) {
                 // Selection indicator
                 const pulse = Math.sin(time * 6) * 0.3 + 0.7;
                 ctx.fillStyle = `rgba(206, 17, 38, ${pulse * 0.3})`;
-                ctx.fillRect(80, y - 15, 200, 30);
+                ctx.fillRect(W/2 - BUTTON_WIDTH/2, y - BUTTON_HEIGHT/2, BUTTON_WIDTH, BUTTON_HEIGHT);
                 ctx.strokeStyle = CONFIG.COLORS.PY_RED;
                 ctx.lineWidth = 1;
-                ctx.strokeRect(80, y - 15, 200, 30);
+                ctx.strokeRect(W/2 - BUTTON_WIDTH/2, y - BUTTON_HEIGHT/2, BUTTON_WIDTH, BUTTON_HEIGHT);
                 ctx.fillStyle = CONFIG.COLORS.PY_GOLD;
             } else {
                 ctx.fillStyle = CONFIG.COLORS.PY_WHITE;
             }
 
             ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
             ctx.fillText(OPTIONS[i], W / 2, y);
         }
 
@@ -218,33 +237,27 @@ _drawProtagonistInicio(ctx, W / 2, decorY + 40, time);
         ctx.globalAlpha = 1;
     }
 
-  // Draw protagonist image
+    // Draw protagonist image
     function _drawProtagonist(ctx, cx, cy, time) {
         const img = Renderer.getImage('protagonist');
         if (img) {
-            const size = 48;
+            const size = 48; // Small size to not overlap title or buttons
             const glow = Math.sin(time * 3) * 0.1 + 0.4;
+
+            // Glow effect
             ctx.shadowColor = CONFIG.COLORS.PY_GOLD;
             ctx.shadowBlur = 15 + glow * 10;
+
+            // Draw centered
             ctx.drawImage(img, cx - size / 2, cy - size / 2, size, size);
+
             ctx.shadowBlur = 0;
         } else {
+            // Fallback: draw emoji if image not loaded
             ctx.font = '32px serif';
             ctx.globalAlpha = 0.5;
             ctx.fillText('🦸', cx, cy);
             ctx.globalAlpha = 1;
-        }
-    }
-
-    function _drawProtagonistInicio(ctx, cx, cy, time) {
-        const img = Renderer.getImage('protagonista_inicio');
-        if (img) {
-            const size = 160;
-            const glow = Math.sin(time * 3) * 0.1 + 0.4;
-            ctx.shadowColor = CONFIG.COLORS.PY_GOLD;
-            ctx.shadowBlur = 15 + glow * 10;
-            ctx.drawImage(img, cx - size / 2, cy - size / 2, size, size);
-            ctx.shadowBlur = 0;
         }
     }
 

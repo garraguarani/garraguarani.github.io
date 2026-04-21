@@ -89,23 +89,12 @@ const LevelSelectScreen = (() => {
         ctx.textAlign = 'center';
         ctx.fillText('FIXTURE MUNDIAL 2026', W/2, 40);
 
-        // Line connecting levels
-        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([4, 4]);
-        ctx.beginPath();
-        for (let i = 0; i < 8; i++) {
-            const pos = _getLevelPos(i);
-            if (i === 0) ctx.moveTo(pos.x, pos.y);
-            else ctx.lineTo(pos.x, pos.y);
-        }
-        ctx.stroke();
-        ctx.setLineDash([]);
+        // Se eliminó la línea de puntos suspensivos para una visual más limpia
 
         // Draw each level node
         const labels = [
             'FASE DE GRUPOS', 'FASE DE GRUPOS', 'FASE DE GRUPOS',
-            '16VOS', 'OCTAVOS', 'CUARTOS', 'SEMIFINAL', '⭐ FINAL ⭐'
+            'DIECISEISAVOS', 'OCTAVOS', 'CUARTOS', 'SEMIFINAL', '⭐ FINAL ⭐'
         ];
 
         for (let i = 0; i < 8; i++) {
