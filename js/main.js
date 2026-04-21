@@ -68,11 +68,8 @@ const Game = (() => {
             lastTime = performance.now();
             requestAnimationFrame(gameLoop);
 
-            // Resume audio and start BGM on first interaction
-            function startAudio() {
-                Audio.resume();
-                Audio.playBGM();
-            }
+            // Resume audio en primer gesto del usuario (requerimiento de navegadores)
+            function startAudio() { Audio.resume(); }
             document.addEventListener('touchstart', startAudio, { once: true });
             document.addEventListener('click', startAudio, { once: true });
             document.addEventListener('keydown', startAudio, { once: true });
@@ -153,7 +150,6 @@ const Game = (() => {
     function _updateMenu(dt) {
         const result = MenuScreen.update(dt);
         if (result === 'play') {
-            Audio.stopBGM();
             state = CONFIG.STATES.LEVEL_SELECT;
             Audio.menuSelect();
         } else if (result === 'controls') {
@@ -167,7 +163,6 @@ const Game = (() => {
         const result = ControlsScreen.update(dt);
         if (result === -1) {
             state = CONFIG.STATES.MENU;
-            Audio.playBGM('menu');
         }
     }
 
@@ -176,7 +171,6 @@ const Game = (() => {
         if (result === -1) {
             state = CONFIG.STATES.MENU;
             Audio.menuSelect();
-            Audio.playBGM('menu');
         } else if (result !== null && result >= 0) {
             _startLevel(result);
         }
@@ -275,7 +269,6 @@ const Game = (() => {
             player.fullReset();
             Audio.setAmbientVolume(0);
             Weather.setType('none');
-            Audio.playBGM('menu');
         }
     }
 
@@ -290,7 +283,6 @@ const Game = (() => {
             player.fullReset();
             Audio.setAmbientVolume(0);
             Weather.setType('none');
-            Audio.playBGM('menu');
         }
     }
 

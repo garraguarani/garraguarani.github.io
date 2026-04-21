@@ -89,119 +89,16 @@ const Audio = (() => {
         } catch(e) {}
     }
 
+    function setAmbientVolume(vol) {
+        if (!ambientGain || !enabled) return;
+        ambientGain.gain.setTargetAtTime(vol * 0.04 * masterVolume, ctx.currentTime, 0.5);
+    }
+
     // =====================================================
-    // MELODÍAS
+    // MÚSICA (DESACTIVADA)
     // =====================================================
-
-    /**
-     * MENU — Anthem épico 150 BPM, escala de E menor
-     * Inspirado en ISS Deluxe / Football anthems
-     * Cada entrada: [frecuencia, pasos en 16vas]
-     * (stepDur = 1 paso = una semicorchea = 60/BPM/4)
-     */
-    const MENU_LEAD = [
-        // Frase 1: arranque explosivo
-        [330,2],[370,2],[415,2],[370,2],
-        [494,2],[440,2],[415,4],
-        // Frase 2: subida y grito
-        [494,2],[523,2],[587,2],[659,2],
-        [784,4],[659,4],
-        // Frase 3: respuesta bajando
-        [587,2],[523,2],[494,2],[440,2],
-        [415,2],[370,2],[330,4],
-        // Frase 4: remate final
-        [415,2],[494,2],[587,2],[523,2],
-        [659,4],[784,4],[0,4]
-    ]; // total = 48 steps
-
-    const MENU_BASS = [
-        // I - VII - VI - VII (Em - D - C - D)  
-        [82,8],[98,8],[131,8],[98,8], // a
-        [82,8],[73,8],[98,8],[82,8]  // b
-    ]; // total = 64 steps → loop diferente al lead (poliritmia natural)
-
-    // Counter-melody / arpeggio en 16vas sobre los acordes
-    const MENU_ARP = [
-        165,196,247,196, 220,261,330,261, // Am arp
-        196,247,294,247, 220,261,330,220, // bm arp
-        175,220,261,220, 196,247,294,247, // C arp
-        196,261,330,261, 247,294,370,294  // D arp
-    ]; // 32 notas = 32 steps
-
-    // Acordes de pad (pad largo, 4 notas cada 8 pasos)
-    const MENU_CHORDS = [
-        [164,196,247],  // Am/C
-        [196,247,294],  // Bm (paso a D)
-        [175,220,261],  // C
-        [196,247,330],  // D
-    ];
-
-    // (Solo se usaba internamente — eliminado para que la música sea únicamente del menú)
-
-    function _bgmLoop(type) {
-        if (!isPlayingBgm || !ctx) return;
-        // Solo se reproduce el tema de menú
-        const BPM = 150;
-        const step = 60 / BPM / 4;
-
-        // ----- CAPA 1: Melodía lead -----
-        let t = 0;
-        for (const [freq, steps] of MENU_LEAD) {
-            const dur = step * steps;
-            if (freq > 0) _note(freq, dur * 0.80, 'square', 0.07, t);
-            t += dur;
-        }
-        const loopDur = t;
-
-        // ----- CAPA 2: Bajo -----
-        let tb = 0;
-        for (const [freq, steps] of MENU_BASS) {
-            const dur = step * steps;
-            _note(freq,       dur * 0.7, 'triangle', 0.11, tb);
-            _note(freq * 0.5, dur * 0.4, 'sawtooth', 0.04, tb + 0.01);
-            tb += dur;
-            if (tb >= loopDur) break;
-        }
-
-        // ----- CAPA 3: Arpeggio -----
-        for (let i = 0; i < MENU_ARP.length && i * step < loopDur; i++) {
-            _note(MENU_ARP[i], step * 0.45, 'sine', 0.035, i * step);
-        }
-
-        // ----- CAPA 4: Pad armónico -----
-        for (let ci = 0; ci < MENU_CHORDS.length; ci++) {
-            const chordTime = ci * step * 8;
-            if (chordTime >= loopDur) break;
-            for (const f of MENU_CHORDS[ci]) {
-                _note(f, step * 7.5, 'sine', 0.022, chordTime);
-            }
-        }
-
-        // ----- CAPA 5: Percusión -----
-        const totalSteps = Math.round(loopDur / step);
-        for (let i = 0; i < totalSteps; i++) {
-            const pt = i * step;
-            if (i % 8 === 0)     _noise(0.14, 0.07, 100,  pt);  // Kick
-            if (i % 8 === 4)     _noise(0.12, 0.05, 2500, pt);  // Snare
-            if (i % 16 === 12)   _noise(0.06, 0.035, 6000, pt); // Open hi-hat
-        }
-
-        bgmTimer = setTimeout(() => _bgmLoop(type), loopDur * 1000);
-    }
-
-    function playBGM(type = 'menu') {
-        if (!enabled || !ctx) return;
-        resume();
-        stopBGM();
-        isPlayingBgm = true;
-        // Solo reproducimos el tema de menú (petición del usuario)
-        _bgmLoop('menu');
-    }
-
-    function stopBGM() {
-        isPlayingBgm = false;
-        if (bgmTimer) { clearTimeout(bgmTimer); bgmTimer = null; }
-    }
+    function playBGM(type = 'menu') { /* Música desactivada */ }
+    function stopBGM() { /* Música desactivada */ }
 
     // =====================================================
     // SFX

@@ -22,7 +22,7 @@ const MenuScreen = (() => {
     function update(dt) {
         if (!audioContextStarted) {
             audioContextStarted = true;
-            try { Audio.resume(); Audio.playBGM('menu'); } catch (e) {}
+            try { Audio.resume(); } catch (e) {}
         }
         time += dt;
         if (inputCooldown > 0) inputCooldown -= dt;
@@ -71,6 +71,12 @@ const MenuScreen = (() => {
     function draw(ctx) {
         const W = CONFIG.GAME_WIDTH;   // 360
         const H = CONFIG.GAME_HEIGHT;  // 640
+
+        // Reset explícito del canvas state (evita lineDash o globalAlpha residual)
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+        ctx.lineWidth = 1;
 
         // ---- FONDO DE CANCHA ----
         Background.draw(ctx);
@@ -141,6 +147,10 @@ const MenuScreen = (() => {
     }
 
     function _drawButton(ctx, cx, cy, w, h, label, isSelected, t) {
+        // Reset state del canvas para evitar artefactos visuales
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
         ctx.save();
         ctx.translate(cx, cy);
 
