@@ -183,7 +183,7 @@ class Boss {
                 this.x, this.y + this.height / 2,
                 Math.cos(angle) * CONFIG.ENEMY_BULLET_SPEED,
                 Math.sin(angle) * CONFIG.ENEMY_BULLET_SPEED,
-                12, CONFIG.COLORS.ENEMY_BULLET, { isEnemy: true, width: 6, height: 6 }
+                12, '#FF3D00', { isEnemy: true, width: 6, height: 6 }
             );
         }
     }
@@ -201,7 +201,7 @@ class Boss {
                 this.x + (Math.random() - 0.5) * 20, this.y + this.height / 2,
                 (dx / len) * CONFIG.ENEMY_BULLET_SPEED * 1.2,
                 (dy / len) * CONFIG.ENEMY_BULLET_SPEED * 1.2,
-                15, CONFIG.COLORS.ENEMY_BULLET, { isEnemy: true, width: 6, height: 6 }
+                15, '#FF3D00', { isEnemy: true, width: 6, height: 6 }
             );
         }
     }
@@ -215,7 +215,7 @@ class Boss {
                 this.x, this.y,
                 Math.cos(angle) * CONFIG.ENEMY_BULLET_SPEED * 0.8,
                 Math.sin(angle) * CONFIG.ENEMY_BULLET_SPEED * 0.8,
-                10, CONFIG.COLORS.ENEMY_BULLET, { isEnemy: true, width: 6, height: 6 }
+                10, '#FF3D00', { isEnemy: true, width: 6, height: 6 }
             );
         }
     }
@@ -229,7 +229,7 @@ class Boss {
                 this.x, this.y,
                 Math.cos(angle) * CONFIG.ENEMY_BULLET_SPEED * 0.7,
                 Math.sin(angle) * CONFIG.ENEMY_BULLET_SPEED * 0.7,
-                10, CONFIG.COLORS.ENEMY_BULLET, { isEnemy: true, width: 6, height: 6 }
+                10, '#FF3D00', { isEnemy: true, width: 6, height: 6 }
             );
         }
     }
@@ -243,7 +243,7 @@ class Boss {
                 this.x, this.y + this.height / 2,
                 Math.cos(angle) * CONFIG.ENEMY_BULLET_SPEED,
                 Math.sin(angle) * CONFIG.ENEMY_BULLET_SPEED,
-                12, CONFIG.COLORS.ENEMY_BULLET, { isEnemy: true, width: 6, height: 6 }
+                12, '#FF3D00', { isEnemy: true, width: 6, height: 6 }
             );
         }
     }

@@ -49,6 +49,7 @@ class Enemy {
         this.flashTimer = 0;
         this.charging = false;
         this.projectileType = cfg.projectileType || 'ball';
+        this.bulletColor = cfg.bulletColor || '#FFFFFF';
     }
 
     update(dt) {
@@ -147,7 +148,7 @@ class Enemy {
             Audio.cardToss();
         }
 
-        const bulletColor = this.projectileType === 'card' ? '#FF00FF' : CONFIG.COLORS.ENEMY_BULLET;
+        const bulletColor = this.bulletColor;
         const bWidth = this.projectileType === 'card' ? 8 : 4;
         const bHeight = this.projectileType === 'card' ? 12 : 4;
 

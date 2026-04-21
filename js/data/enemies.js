@@ -13,7 +13,8 @@ const ENEMY_TYPES = {
         width: 20,
         height: 22,
         damage: 12,
-        defaultPattern: 'straight'
+        defaultPattern: 'straight',
+        bulletColor: '#007FFF' // Azul Eléctrico
     },
     dribbler: {
         name: 'Driblador',
@@ -35,7 +36,8 @@ const ENEMY_TYPES = {
         width: 18,
         height: 20,
         damage: 12,
-        defaultPattern: 'diagonal'
+        defaultPattern: 'diagonal',
+        bulletColor: '#FFFF00' // Amarillo Brillante
     },
     // --- NUEVOS: Hincha, Hincha2 y Árbitro ---
     hincha: {
@@ -71,7 +73,8 @@ const ENEMY_TYPES = {
         damage: 18,
         defaultPattern: 'horizontal_top',
         isSpecial: true,
-        projectileType: 'card'
+        projectileType: 'card',
+        bulletColor: '#FF0000' // ROJO PURO (Tarjetas Rojas)
     },
     // --- Intermediate ---
     defender: {
@@ -83,7 +86,8 @@ const ENEMY_TYPES = {
         width: 24,
         height: 26,
         damage: 20,
-        defaultPattern: 'straight'
+        defaultPattern: 'straight',
+        bulletColor: '#8D6E63' // Marrón Terracota
     },
     midfielder: {
         name: 'Mediocampista',
@@ -94,7 +98,8 @@ const ENEMY_TYPES = {
         width: 20,
         height: 22,
         damage: 15,
-        defaultPattern: 'weave'
+        defaultPattern: 'weave',
+        bulletColor: '#9C27B0' // Púrpura Profundo
     },
     goalkeeper: {
         name: 'Portero',
@@ -105,7 +110,8 @@ const ENEMY_TYPES = {
         width: 26,
         height: 26,
         damage: 20,
-        defaultPattern: 'horizontal'
+        defaultPattern: 'horizontal',
+        bulletColor: '#0000FF' // Azul Rey
     },
     // --- Advanced ---
     star: {
@@ -117,7 +123,8 @@ const ENEMY_TYPES = {
         width: 22,
         height: 24,
         damage: 20,
-        defaultPattern: 'erratic'
+        defaultPattern: 'erratic',
+        bulletColor: '#C2185B' // Fucsia Oscuro
     },
     coach: {
         name: 'Director Técnico',
@@ -129,6 +136,7 @@ const ENEMY_TYPES = {
         height: 28,
         damage: 15,
         defaultPattern: 'stay_top',
-        buffNearby: true
+        buffNearby: true,
+        bulletColor: '#4A148C' // Violeta Oscuro
     }
 };
