@@ -1,57 +1,55 @@
 /* ============================================
    GARRA GUARANÍ — Audio System
-   Web Audio API for SFX + Music
+   100% Synthetic 16-bit Style (Web Audio API)
    ============================================ */
 
 const Audio = (() => {
     let ctx = null;
     let enabled = true;
     let masterVolume = 0.5;
-    let bgmElement = null;
-    let bgmPlaying = false;
+    let currentBgm = null;
+    let bgmTimer = null;
+    let isPlayingBgm = false;
+    let ambientGain = null;
 
     function init() {
         try {
             ctx = new (window.AudioContext || window.webkitAudioContext)();
+            _initAmbient();
         } catch (e) {
             console.warn('Web Audio API not supported');
             enabled = false;
         }
-
-        // Cargar música de fondo para el menú (con manejo de errores)
-        // Se inicializa null y se crea al entrar al menú para evitar errores de carga
-        bgmElement = null;
     }
 
-    function playBGM() {
-        if (enabled && !bgmElement) {
-            // Crear el elemento de audio la primera vez que se necesita
-            try {
-                const bgmPath = 'assets/audio/menu.mp3';
-                bgmElement = new Audio(bgmPath);
-                bgmElement.loop = true;
-                bgmElement.volume = 0.3;
-                bgmElement.addEventListener('error', () => {
-                    console.log('BGM error: file not found or cannot load');
-                    bgmElement = null;
-                });
-            } catch (e) {
-                console.log('BGM create failed:', e);
-                return;
-            }
-        }
-        if (bgmElement && enabled) {
-            bgmElement.currentTime = 0;
-            bgmElement.play().catch(e => console.log('BGM autoplay bloqueado:', e));
-            bgmPlaying = true;
-        }
+    function _initAmbient() {
+        if (!ctx) return;
+        ambientGain = ctx.createGain();
+        ambientGain.gain.setValueAtTime(0, ctx.currentTime);
+        ambientGain.connect(ctx.destination);
+
+        // Crowd murmur simulation with white noise + lowpass
+        const bufferSize = ctx.sampleRate * 2;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(400, ctx.currentTime);
+
+        source.connect(filter);
+        filter.connect(ambientGain);
+        source.start();
     }
 
-    function stopBGM() {
-        if (bgmElement && bgmPlaying) {
-            bgmElement.pause();
-            bgmPlaying = false;
-        }
+    function setAmbientVolume(vol) {
+        if (!ambientGain || !enabled) return;
+        ambientGain.gain.setTargetAtTime(vol * 0.05 * masterVolume, ctx.currentTime, 0.5);
     }
 
     function resume() {
@@ -60,14 +58,14 @@ const Audio = (() => {
         }
     }
 
-    /** Generate a simple synth sound */
-    function _playTone(freq, duration, type = 'square', volume = 0.3) {
+    function _playTone(freq, duration, type = 'square', volume = 0.3, detune = 0) {
         if (!enabled || !ctx) return;
         resume();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc.detune.setValueAtTime(detune, ctx.currentTime);
         gain.gain.setValueAtTime(volume * masterVolume, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
         osc.connect(gain);
@@ -76,108 +74,111 @@ const Audio = (() => {
         osc.stop(ctx.currentTime + duration);
     }
 
-    /** Simple noise burst for explosions */
-    function _playNoise(duration, volume = 0.2) {
+    function _playNoise(duration, volume = 0.2, filterFreq = 1000) {
         if (!enabled || !ctx) return;
         resume();
         const bufferSize = ctx.sampleRate * duration;
         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = Math.random() * 2 - 1;
-        }
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
         const source = ctx.createBufferSource();
         source.buffer = buffer;
+        const filter = ctx.createBiquadFilter();
+        filter.frequency.setValueAtTime(filterFreq, ctx.currentTime);
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(volume * masterVolume, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-        source.connect(gain);
+        source.connect(filter);
+        filter.connect(gain);
         gain.connect(ctx.destination);
         source.start();
     }
 
-    // --- Sound Effects ---
-    function shoot() {
-        _playTone(880, 0.06, 'square', 0.15);
-    }
-
-    function shootHeavy() {
-        _playTone(440, 0.1, 'sawtooth', 0.2);
-        _playTone(220, 0.15, 'square', 0.1);
-    }
-
-    function enemyHit() {
-        _playTone(300, 0.08, 'square', 0.15);
-    }
-
-    function enemyDie() {
-        _playNoise(0.15, 0.2);
-        _playTone(200, 0.15, 'sawtooth', 0.15);
-    }
-
-    function playerHit() {
-        _playNoise(0.2, 0.3);
-        _playTone(150, 0.2, 'sawtooth', 0.25);
-    }
-
-    function powerup() {
-        _playTone(523, 0.1, 'sine', 0.25);
-        setTimeout(() => _playTone(659, 0.1, 'sine', 0.25), 80);
-        setTimeout(() => _playTone(784, 0.15, 'sine', 0.25), 160);
-    }
-
-    function megaGol() {
-        _playNoise(0.5, 0.4);
-        _playTone(100, 0.5, 'sawtooth', 0.3);
-        setTimeout(() => _playTone(150, 0.3, 'square', 0.3), 200);
-    }
-
-    function garraActivate() {
-        for (let i = 0; i < 5; i++) {
-            setTimeout(() => _playTone(200 + i * 100, 0.2, 'sawtooth', 0.2), i * 60);
+    // --- BGM Engine ---
+    const MELODIES = {
+        menu: {
+            tempo: 140,
+            notes: [
+                [261, 4], [329, 4], [392, 4], [523, 2], [392, 4], [329, 4],
+                [293, 4], [349, 4], [440, 4], [587, 2], [440, 4], [349, 4]
+            ]
+        },
+        level: { // Base para niveles emocionantes
+            tempo: 160,
+            notes: [
+                [196, 8], [196, 8], [261, 4], [196, 8], [196, 8], [293, 4],
+                [196, 8], [196, 8], [329, 4], [392, 4], [349, 4], [293, 4]
+            ]
         }
-    }
+    };
 
-    function bossAppear() {
-        _playTone(100, 0.5, 'sawtooth', 0.3);
-        setTimeout(() => _playTone(80, 0.5, 'sawtooth', 0.3), 300);
-        setTimeout(() => _playTone(60, 0.8, 'sawtooth', 0.3), 600);
-    }
+    function playBGM(type = 'menu') {
+        if (!enabled) return;
+        stopBGM();
+        isPlayingBgm = true;
+        const melody = MELODIES[type] || MELODIES.menu;
+        let noteIndex = 0;
 
-    function victory() {
-        const notes = [523, 659, 784, 1047];
-        notes.forEach((n, i) => {
-            setTimeout(() => _playTone(n, 0.3, 'sine', 0.3), i * 150);
-        });
-    }
-
-    function gameOver() {
-        const notes = [400, 350, 300, 200];
-        notes.forEach((n, i) => {
-            setTimeout(() => _playTone(n, 0.4, 'sawtooth', 0.2), i * 200);
-        });
-    }
-
-    function menuSelect() {
-        _playTone(660, 0.08, 'square', 0.15);
-    }
-
-    function coinPickup() {
-        _playTone(1200, 0.05, 'sine', 0.15);
-        setTimeout(() => _playTone(1600, 0.08, 'sine', 0.15), 50);
-    }
-
-    function setEnabled(val) {
-        enabled = val;
-        if (bgmElement) {
-            bgmElement.muted = !val;
+        function nextNote() {
+            if (!isPlayingBgm) return;
+            const note = melody.notes[noteIndex];
+            const duration = (60 / melody.tempo) * (4 / note[1]);
+            _playTone(note[0], duration, 'square', 0.1);
+            
+            noteIndex = (noteIndex + 1) % melody.notes.length;
+            bgmTimer = setTimeout(nextNote, duration * 1000);
         }
+        nextNote();
     }
+
+    function stopBGM() {
+        isPlayingBgm = false;
+        if (bgmTimer) clearTimeout(bgmTimer);
+    }
+
+    // --- SFII Style SFX ---
+    function hinchaCharge() {
+        // Grito de carga ascendente
+        const duration = 0.4;
+        const startFreq = 100;
+        const endFreq = 400;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(endFreq, ctx.currentTime + duration);
+        gain.gain.setValueAtTime(0.2 * masterVolume, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+    }
+
+    function arbitroWhistle() {
+        _playTone(2000, 0.1, 'sine', 0.2);
+        setTimeout(() => _playTone(2000, 0.2, 'sine', 0.2), 120);
+    }
+
+    function cardToss() {
+        _playNoise(0.1, 0.1, 3000);
+    }
+
+    // Existing SFX migrated to clean synth
+    function shoot() { _playTone(880, 0.05, 'square', 0.1); }
+    function enemyHit() { _playTone(150, 0.08, 'sawtooth', 0.15); }
+    function enemyDie() { _playNoise(0.2, 0.25, 400); }
+    function playerHit() { _playNoise(0.3, 0.4, 200); _playTone(100, 0.3, 'sawtooth', 0.2); }
+    function powerup() { _playTone(523, 0.1, 'sine', 0.2); setTimeout(()=>_playTone(659, 0.15, 'sine', 0.2), 80); }
+    function victory() { playBGM('menu'); }
+    function gameOver() { stopBGM(); _playTone(200, 0.5, 'sawtooth', 0.3); }
+    function menuSelect() { _playTone(600, 0.06, 'square', 0.1); }
+
+    function setEnabled(val) { enabled = val; if (!val) stopBGM(); }
 
     return {
-        init, resume, setEnabled, playBGM, stopBGM,
-        shoot, shootHeavy, enemyHit, enemyDie,
-        playerHit, powerup, megaGol, garraActivate,
-        bossAppear, victory, gameOver, menuSelect, coinPickup
+        init, resume, setEnabled, playBGM, stopBGM, setAmbientVolume,
+        shoot, enemyHit, enemyDie, playerHit, powerup, victory, gameOver, 
+        menuSelect, hinchaCharge, arbitroWhistle, cardToss
     };
 })();
