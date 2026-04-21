@@ -1,14 +1,15 @@
 /* ============================================
    GARRA GUARANÍ — Enemy Types Data
+   Balanced for v16 (Early game accessible, late game extreme)
    ============================================ */
 
 const ENEMY_TYPES = {
     // --- Basic ---
     runner: {
         name: 'Corredor',
-        health: 8,         // Antes 3
+        health: 2,         // 2 shots to kill at L1 ( tutorial )
         speed: 120,
-        shootRate: 1.4,    // Antes 2.0 (más disparos)
+        shootRate: 1.4,
         reward: 100,
         width: 20,
         height: 22,
@@ -18,9 +19,9 @@ const ENEMY_TYPES = {
     },
     dribbler: {
         name: 'Driblador',
-        health: 12,        // Antes 3
+        health: 2,         // 2 shots
         speed: 100,
-        shootRate: 0,  // doesn't shoot
+        shootRate: 0,
         reward: 150,
         width: 20,
         height: 22,
@@ -29,9 +30,9 @@ const ENEMY_TYPES = {
     },
     lateral: {
         name: 'Lateral',
-        health: 8,         // Antes 3
+        health: 2,         // 2 shots
         speed: 140,
-        shootRate: 1.8,    // Antes 2.5
+        shootRate: 1.8,
         reward: 120,
         width: 18,
         height: 20,
@@ -39,49 +40,40 @@ const ENEMY_TYPES = {
         defaultPattern: 'diagonal',
         bulletColor: '#FFFF00' // Amarillo Brillante
     },
-    // --- NUEVOS: Hincha, Hincha2 y Árbitro ---
+    
+    // --- Mid-Bosses (Appear in waves) ---
     hincha: {
-        name: 'Hincha Fanático',
-        health: 22,        // Mucho más resistente
-        speed: 100,
-        reward: 850,       // Recompensa acorde
-        width: 48,
-        height: 60,
-        damage: 25,
-        defaultPattern: 'charge_player',
-        isSpecial: true
-    },
-    hincha2: {
-        name: 'Hincha Ultras',
-        health: 32,        // Un tanque
-        speed: 85,
-        reward: 1200,      // Gran recompensa
-        width: 48,
-        height: 60,
-        damage: 30,
-        defaultPattern: 'charge_player',
-        isSpecial: true
+        name: 'Hincha Loco',
+        health: 4,         // 4 shots at L1
+        speed: 110,
+        shootRate: 1.5,
+        reward: 250,
+        width: 22,
+        height: 26,
+        damage: 15,
+        defaultPattern: 'zigzag',
+        bulletColor: '#FFD700' // Amarillo Brillante
     },
     arbitro: {
-        name: 'Árbitro',
-        health: 28,        // Mucho más resistente
-        speed: 80,
-        shootRate: 1.5,
-        reward: 1000,      // Gran recompensa
-        width: 34,
-        height: 44,
-        damage: 18,
-        defaultPattern: 'horizontal_top',
-        isSpecial: true,
+        name: 'Santi el Árbitro',
+        health: 4,         // 4 shots at L1
+        speed: 100,
+        shootRate: 1.2,
+        reward: 350,
+        width: 22,
+        height: 30,
+        damage: 25,
+        defaultPattern: 'straight',
         projectileType: 'card',
-        bulletColor: '#FF0000' // ROJO PURO (Tarjetas Rojas)
+        bulletColor: '#FF0000' // Rojo (Tarjeta)
     },
+
     // --- Intermediate ---
     defender: {
         name: 'Defensor',
-        health: 15,        // Antes 3
+        health: 5,         // tanky at L1
         speed: 60,
-        shootRate: 2.2,    // Antes 3.0
+        shootRate: 2.2,
         reward: 300,
         width: 24,
         height: 26,
@@ -91,9 +83,9 @@ const ENEMY_TYPES = {
     },
     midfielder: {
         name: 'Mediocampista',
-        health: 12,        // Antes 3
+        health: 4,
         speed: 85,
-        shootRate: 0.9,    // Antes 1.2
+        shootRate: 0.9,
         reward: 250,
         width: 20,
         height: 22,
@@ -103,9 +95,9 @@ const ENEMY_TYPES = {
     },
     goalkeeper: {
         name: 'Portero',
-        health: 20,        // Antes 3
+        health: 6,
         speed: 50,
-        shootRate: 1.2,    // Antes 1.5
+        shootRate: 1.2,
         reward: 350,
         width: 26,
         height: 26,
@@ -113,12 +105,13 @@ const ENEMY_TYPES = {
         defaultPattern: 'horizontal',
         bulletColor: '#0000FF' // Azul Rey
     },
+
     // --- Advanced ---
     star: {
         name: '10 Rival',
-        health: 18,        // Antes 3
+        health: 5,
         speed: 130,
-        shootRate: 0.5,    // Antes 0.8
+        shootRate: 0.5,
         reward: 500,
         width: 22,
         height: 24,
@@ -128,9 +121,9 @@ const ENEMY_TYPES = {
     },
     coach: {
         name: 'Director Técnico',
-        health: 25,        // Antes 3
+        health: 8,
         speed: 70,
-        shootRate: 1.5,    // Antes 2.0
+        shootRate: 1.5,
         reward: 600,
         width: 24,
         height: 28,

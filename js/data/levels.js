@@ -20,7 +20,7 @@ const LEVELS = [
             { enemies: [{ type: 'dribbler', x: 40 }, { type: 'dribbler', x: 140 }, { type: 'dribbler', x: 240 }], spawnInterval: 0.6, pauseAfter: 2 },
             { enemies: [{ type: 'hincha', x: 100 }, { type: 'hincha', x: 260 }, { type: 'runner', x: 180 }], spawnInterval: 0.5, pauseAfter: 3 }
         ],
-        boss: { name: 'Capitán USA', health: 600, phases: 3, patterns: ['spread', 'charge', 'burst'], weapon: 'basic' }
+        boss: { name: 'Capitán USA', health: 150, phases: 3, patterns: ['spread', 'charge', 'burst'], weapon: 'basic' }
     },
 
     // === NIVEL 2: vs Turquía ===
