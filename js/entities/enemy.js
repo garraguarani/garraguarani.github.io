@@ -23,6 +23,8 @@ class Enemy {
         this.time = 0;
         this.startX = 0;
         this.flashTimer = 0;
+        this.charging = false;
+        this.projectileType = 'ball';
     }
 
     init(cfg) {
@@ -45,6 +47,8 @@ class Enemy {
         this.time = 0;
         this.startX = cfg.x;
         this.flashTimer = 0;
+        this.charging = false;
+        this.projectileType = cfg.projectileType || 'ball';
     }
 
     update(dt) {
@@ -105,6 +109,29 @@ class Enemy {
                 }
                 this.x = this.startX + Math.sin(this.time * 1.2) * 70;
                 break;
+            case 'charge_player':
+                if (this.y < 80) {
+                    this.y += this.speed * 0.6 * dt;
+                } else {
+                    if (!this.charging) {
+                        this.charging = true;
+                        Audio.hinchaCharge();
+                    }
+                    this.y += this.speed * 1.5 * dt;
+                    // Lerp towards player X
+                    if (window.Game && window.Game.player) {
+                        this.x += (window.Game.player.x - this.x) * 2 * dt;
+                    }
+                }
+                break;
+            case 'horizontal_top':
+                if (this.y < 40) {
+                    this.y += this.speed * dt;
+                } else {
+                    this.y = 40 + Math.sin(this.time * 2) * 10;
+                    this.x = this.startX + Math.sin(this.time * 1.5) * 100;
+                }
+                break;
             default:
                 this.y += this.speed * dt;
         }
@@ -117,20 +144,30 @@ class Enemy {
         if (!window.Game) return;
         const b = window.Game.enemyBullets.get();
         if (!b) return;
+
+        if (this.type === 'arbitro') {
+            Audio.arbitroWhistle();
+            Audio.cardToss();
+        }
+
+        const bulletColor = this.projectileType === 'card' ? '#FFD700' : '#FF6644';
+        const bWidth = this.projectileType === 'card' ? 8 : 4;
+        const bHeight = this.projectileType === 'card' ? 12 : 4;
+
         b.init(
             this.x, this.y + this.height / 2,
             0, CONFIG.ENEMY_BULLET_SPEED,
             this.damage,
-            '#FF6644',
-            { isEnemy: true, width: 4, height: 4 }
+            bulletColor,
+            { isEnemy: true, width: bWidth, height: bHeight }
         );
     }
 
     takeDamage(amount) {
         this.health -= amount;
         this.flashTimer = 0.1;
-        if (this.health <= 2) {
-            this.health = 2;
+        if (this.health <= 0) {
+            this.health = 0;
             this.alive = false;
             this.active = false;
         }
@@ -149,7 +186,7 @@ class Enemy {
             return;
         }
 
-        const img = Renderer.getImage('enemy_base');
+        const img = Renderer.getImage(this.type === 'arbitro' ? 'arbitro_base' : 'enemy_base');
         if (img) {
             // Shadow
             ctx.fillStyle = 'rgba(0,0,0,0.2)';
@@ -170,9 +207,23 @@ class Enemy {
     }
 
     _drawProcedural(ctx, cx, cy, w, h) {
-        // --- Pixel art rival player (top-down view) ---
         const [mainColor, accentColor, altColor] = this.colors;
         ctx.fillStyle = mainColor;
-        ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
+        
+        if (this.type === 'arbitro') {
+            // Simple referee block with black/white stripes
+            for(let i=0; i<w; i+=4) {
+                ctx.fillStyle = (i/4)%2 === 0 ? '#000' : '#FFF';
+                ctx.fillRect(cx - w/2 + i, cy - h/2, 4, h);
+            }
+        } else if (this.type === 'hincha') {
+            // Hincha with a different color/shape
+            ctx.fillStyle = '#FFDD00';
+            ctx.fillRect(cx - w/2, cy - h/2, w, h);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(cx - w/4, cy - h/4, w/2, h/2);
+        } else {
+            ctx.fillRect(cx - w/2, cy - h/2, w, h);
+        }
     }
 }

@@ -30,10 +30,16 @@ class Boss {
         this.alive = true;
         this.x = CONFIG.GAME_WIDTH / 2;
         this.y = -80;
-        this.width = CONFIG.BOSS_WIDTH;
-        this.height = CONFIG.BOSS_HEIGHT;
-        this.health = cfg.health;
-        this.maxHealth = cfg.health;
+        
+        // Progressive scaling based on level
+        const levelIdx = window.Game ? window.Game.levelIndex : 0;
+        const scalar = 1 + (levelIdx * 0.15); // 15% bigger per level
+        
+        this.width = CONFIG.BOSS_WIDTH * scalar;
+        this.height = CONFIG.BOSS_HEIGHT * scalar;
+        this.health = cfg.health * (1 + levelIdx * 0.1); // 10% more HP per level scale factor
+        this.maxHealth = this.health;
+        
         this.phase = 0;
         this.totalPhases = cfg.phases || 3;
         this.patterns = cfg.patterns || ['spread'];
