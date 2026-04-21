@@ -117,7 +117,6 @@ const Game = (() => {
     function update(dt) {
         Background.update(dt);
         Weather.update(dt);
-        Crowd.update(dt);
 
         switch (state) {
             case CONFIG.STATES.MENU:
@@ -336,7 +335,6 @@ const Game = (() => {
 
     function _renderPlaying(ctx) {
         Background.draw(ctx);
-        Crowd.draw(ctx);
         powerups.drawAll(ctx);
         enemies.drawAll(ctx);
         if (currentBoss.active) currentBoss.draw(ctx);
