@@ -9,13 +9,15 @@ const Input = (() => {
     let touchStartY = 0;
     let touchCurrentX = 0;
     let touchCurrentY = 0;
-    let playerStartX = 0;
-    let playerStartY = 0;
+    
+    // Tap management
+    let tapOccurred = false;
+    let tapX = 0;
+    let tapY = 0;
 
     // Keyboard state
     const keys = {};
 
-    // Canvas reference (set during init)
     let canvasEl = null;
     let scaleX = 1;
     let scaleY = 1;
@@ -27,23 +29,18 @@ const Input = (() => {
         _bindKeyboard();
     }
 
-    // --- Mouse (desktop) ---
     function _bindMouse() {
         canvasEl.addEventListener('mousedown', (e) => {
-            // e.preventDefault(); // Don't prevent default on mousedown to allow focus
             touchActive = true;
             _updatePos(e.clientX, e.clientY);
-            
-            if (window.Game && window.Game.player) {
-                playerStartX = window.Game.player.x;
-                playerStartY = window.Game.player.y;
-            }
+            tapOccurred = true;
+            _setTapPos(e.clientX, e.clientY);
         });
         window.addEventListener('mousemove', (e) => {
             if (!touchActive) return;
             _updatePos(e.clientX, e.clientY);
         });
-        window.addEventListener('mouseup', (e) => {
+        window.addEventListener('mouseup', () => {
             touchActive = false;
         });
     }
@@ -53,116 +50,84 @@ const Input = (() => {
         touchCurrentY = y;
     }
 
+    function _setTapPos(x, y) {
+        const rect = canvasEl.getBoundingClientRect();
+        tapX = (x - rect.left) / scaleX;
+        tapY = (y - rect.top) / scaleY;
+    }
+
     function updateScale(sx, sy) {
         scaleX = sx;
         scaleY = sy;
     }
 
-    // --- Touch ---
     function _bindTouch() {
-        // Prevent default to stop scroll/zoom
-        canvasEl.addEventListener('touchstart', _onTouchStart, { passive: false });
-        canvasEl.addEventListener('touchmove', _onTouchMove, { passive: false });
-        canvasEl.addEventListener('touchend', _onTouchEnd, { passive: false });
-        canvasEl.addEventListener('touchcancel', _onTouchEnd, { passive: false });
+        canvasEl.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            touchActive = true;
+            _updatePos(touch.clientX, touch.clientY);
+            tapOccurred = true;
+            _setTapPos(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+        canvasEl.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!touchActive) return;
+            const touch = e.touches[0];
+            _updatePos(touch.clientX, touch.clientY);
+        }, { passive: false });
+
+        canvasEl.addEventListener('touchend', (e) => {
+            touchActive = false;
+        }, { passive: false });
     }
 
-    function _onTouchStart(e) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        touchActive = true;
-        _updatePos(touch.clientX, touch.clientY);
-        
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY;
-
-        if (window.Game && window.Game.player) {
-            playerStartX = window.Game.player.x;
-            playerStartY = window.Game.player.y;
-        }
+    function isTapActive() {
+        const result = tapOccurred;
+        tapOccurred = false; // Consume tap
+        return result;
     }
 
-    function _onTouchMove(e) {
-        e.preventDefault();
-        if (!touchActive) return;
-        const touch = e.touches[0];
-        _updatePos(touch.clientX, touch.clientY);
-    }
-
-    function _onTouchEnd(e) {
-        // e.preventDefault();
-        touchActive = false;
-    }
-
-    /** Returns the delta from touch start in game coords */
-    function getTouchDelta() {
-        if (!touchActive) return null;
-        return {
-            dx: (touchCurrentX - touchStartX) / scaleX,
-            dy: (touchCurrentY - touchStartY) / scaleY,
-            startPlayerX: playerStartX,
-            startPlayerY: playerStartY
-        };
+    function getTapPosition() {
+        return { x: tapX, y: tapY };
     }
 
     function isTouching() {
         return touchActive;
     }
 
-    /** Get the raw game coords of the current position (touch or mouse) */
     function getTouchGamePos() {
-        if (!touchActive || !canvasEl) return null;
+        if (!canvasEl) return null;
         const rect = canvasEl.getBoundingClientRect();
-        
-        // Calculate coordinates relative to canvas element
-        const x = (touchCurrentX - rect.left);
-        const y = (touchCurrentY - rect.top);
-        
-        // Scale to logical game resolution
         return {
-            x: x / scaleX,
-            y: y / scaleY
+            x: (touchCurrentX - rect.left) / scaleX,
+            y: (touchCurrentY - rect.top) / scaleY
         };
     }
 
-    // --- Keyboard ---
     function _bindKeyboard() {
-        window.addEventListener('keydown', (e) => {
-            keys[e.code] = true;
-        });
-        window.addEventListener('keyup', (e) => {
-            keys[e.code] = false;
-        });
+        window.addEventListener('keydown', (e) => { keys[e.code] = true; });
+        window.addEventListener('keyup', (e) => { keys[e.code] = false; });
     }
 
-    function isKeyDown(code) {
-        return !!keys[code];
-    }
+    function isKeyDown(code) { return !!keys[code]; }
 
-    /** Get normalized direction vector from keyboard input */
     function getKeyboardDirection() {
-        let dx = 0;
-        let dy = 0;
+        let dx = 0, dy = 0;
         if (keys['ArrowLeft'] || keys['KeyA']) dx -= 1;
         if (keys['ArrowRight'] || keys['KeyD']) dx += 1;
         if (keys['ArrowUp'] || keys['KeyW']) dy -= 1;
         if (keys['ArrowDown'] || keys['KeyS']) dy += 1;
-        // Normalize diagonal
         if (dx !== 0 && dy !== 0) {
             const len = Math.sqrt(dx * dx + dy * dy);
-            dx /= len;
-            dy /= len;
+            dx /= len; dy /= len;
         }
         return { dx, dy };
     }
 
     return {
-        init,
-        updateScale,
-        getTouchDelta,
-        isTouching,
-        getTouchGamePos,
-        isKeyDown,
-        getKeyboardDirection
+        init, updateScale, isTouching, getTouchGamePos,
+        isKeyDown, getKeyboardDirection, isTapActive, getTapPosition
     };
 })();
