@@ -77,8 +77,7 @@ const CONFIG = {
         BG_FIELD_LIGHT: '#2E7D32',
         BG_FIELD_LINE: 'rgba(255,255,255,0.15)',
         HEALTH_BAR: '#CE1126',
-        HEALTH_BAR_BG: 'rgba(255,255,255,0.15)',
-        ENEMY_BULLET: '#00FFEE', // Cian brillante para contraste total
+        HEALTH_BAR_BG: 'rgba(255,255,255,0.15)'
     },
 
     // Teams data for the World Cup

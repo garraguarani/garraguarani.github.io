@@ -143,7 +143,9 @@ const Spawner = (() => {
             width: typeDef.width,
             height: typeDef.height,
             colors: team ? team.colors : ['#FF4444', '#FFFFFF', '#FF4444'],
-            damage: typeDef.damage || 10
+            damage: typeDef.damage || 10,
+            bulletColor: typeDef.bulletColor,
+            projectileType: typeDef.projectileType || 'ball'
         });
 
         // Visual warning
@@ -186,7 +188,9 @@ const Spawner = (() => {
             width: type.width,
             height: type.height,
             colors: team ? team.colors : ['#FF4444', '#FFFFFF', '#FF4444'],
-            damage: type.damage || 10
+            damage: type.damage || 10,
+            bulletColor: type.bulletColor,
+            projectileType: type.projectileType || 'ball'
         });
     }
 
