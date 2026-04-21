@@ -1,4 +1,4 @@
-const CACHE_NAME = 'garra-guarani-v14';
+const CACHE_NAME = 'garra-guarani-v15';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',

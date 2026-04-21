@@ -6,9 +6,9 @@ const ENEMY_TYPES = {
     // --- Basic ---
     runner: {
         name: 'Corredor',
-        health: 3,
+        health: 8,         // Antes 3
         speed: 120,
-        shootRate: 2.0,
+        shootRate: 1.4,    // Antes 2.0 (más disparos)
         reward: 100,
         width: 20,
         height: 22,
@@ -18,7 +18,7 @@ const ENEMY_TYPES = {
     },
     dribbler: {
         name: 'Driblador',
-        health: 3,
+        health: 12,        // Antes 3
         speed: 100,
         shootRate: 0,  // doesn't shoot
         reward: 150,
@@ -29,9 +29,9 @@ const ENEMY_TYPES = {
     },
     lateral: {
         name: 'Lateral',
-        health: 3,
+        health: 8,         // Antes 3
         speed: 140,
-        shootRate: 2.5,
+        shootRate: 1.8,    // Antes 2.5
         reward: 120,
         width: 18,
         height: 20,
@@ -79,9 +79,9 @@ const ENEMY_TYPES = {
     // --- Intermediate ---
     defender: {
         name: 'Defensor',
-        health: 3,
+        health: 15,        // Antes 3
         speed: 60,
-        shootRate: 3.0,
+        shootRate: 2.2,    // Antes 3.0
         reward: 300,
         width: 24,
         height: 26,
@@ -91,9 +91,9 @@ const ENEMY_TYPES = {
     },
     midfielder: {
         name: 'Mediocampista',
-        health: 3,
+        health: 12,        // Antes 3
         speed: 85,
-        shootRate: 1.2,
+        shootRate: 0.9,    // Antes 1.2
         reward: 250,
         width: 20,
         height: 22,
@@ -103,9 +103,9 @@ const ENEMY_TYPES = {
     },
     goalkeeper: {
         name: 'Portero',
-        health: 3,
+        health: 20,        // Antes 3
         speed: 50,
-        shootRate: 1.5,
+        shootRate: 1.2,    // Antes 1.5
         reward: 350,
         width: 26,
         height: 26,
@@ -116,9 +116,9 @@ const ENEMY_TYPES = {
     // --- Advanced ---
     star: {
         name: '10 Rival',
-        health: 3,
+        health: 18,        // Antes 3
         speed: 130,
-        shootRate: 0.8,
+        shootRate: 0.5,    // Antes 0.8
         reward: 500,
         width: 22,
         height: 24,
@@ -128,9 +128,9 @@ const ENEMY_TYPES = {
     },
     coach: {
         name: 'Director Técnico',
-        health: 3,
+        health: 25,        // Antes 3
         speed: 70,
-        shootRate: 2.0,
+        shootRate: 1.5,    // Antes 2.0
         reward: 600,
         width: 24,
         height: 28,

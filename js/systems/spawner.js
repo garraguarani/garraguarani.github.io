@@ -129,7 +129,7 @@ const Spawner = (() => {
         const typeDef = ENEMY_TYPES[randomType];
         const teamKey = game.currentTeamKey;
         const team = CONFIG.TEAMS[teamKey];
-        const difficulty = (team ? team.difficulty : 1) * (game.levelIndex * 0.1 + 1);
+        const difficulty = (team ? team.difficulty : 1) * (game.levelIndex * 0.2 + 1);
 
         enemy.init({
             x: behindX,
@@ -159,7 +159,7 @@ const Spawner = (() => {
         const type = ENEMY_TYPES[def.type] || ENEMY_TYPES.runner;
         const teamKey = game.currentTeamKey;
         const team = CONFIG.TEAMS[teamKey];
-        const difficulty = (team ? team.difficulty : 1) * (game.levelIndex * 0.1 + 1);
+        const difficulty = (team ? team.difficulty : 1) * (game.levelIndex * 0.2 + 1);
 
         // Start position
         let startX, startY;

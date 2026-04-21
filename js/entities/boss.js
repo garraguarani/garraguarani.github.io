@@ -37,8 +37,13 @@ class Boss {
         
         this.width = CONFIG.BOSS_WIDTH * scalar;
         this.height = CONFIG.BOSS_HEIGHT * scalar;
-        this.health = cfg.health * (1 + levelIdx * 0.1); // 10% more HP per level scale factor
+        
+        // Resistencia aumentada: 30% más HP por nivel (antes 10%)
+        this.health = cfg.health * (1 + levelIdx * 0.3); 
         this.maxHealth = this.health;
+        
+        // Factor de velocidad progresiva: 15% más rápido por nivel
+        this.speedFactor = 1 + (levelIdx * 0.15);
         
         this.phase = 0;
         this.totalPhases = cfg.phases || 3;
@@ -46,7 +51,9 @@ class Boss {
         this.name = cfg.name || `Capitán ${team.name}`;
         this.colors = team.colors;
         this.time = 0;
-        this.shootTimer = 0.5;
+        
+        // Cadencia de tiro que escala con el nivel
+        this.shootTimer = Math.max(0.2, 0.6 - levelIdx * 0.05); 
         this.phaseTimer = 0;
         this.flashTimer = 0;
         this.entering = true;
@@ -84,46 +91,51 @@ class Boss {
         const pattern = this.patterns[Math.min(this.phase, this.patterns.length - 1)];
         this._applyMovement(pattern, dt);
 
-        // Shooting
+        // Lógica de disparo acelerada por nivel y fase
         this.shootTimer -= dt;
         if (this.shootTimer <= 0) {
             this._shoot(pattern);
-            const baseRate = 1.2 - this.phase * 0.2;
-            this.shootTimer = Math.max(0.3, baseRate);
+            // La cadencia base se reduce conforme sube el nivel (más difícil)
+            const levelIdx = window.Game ? window.Game.levelIndex : 0;
+            const baseRate = Math.max(0.15, (0.8 - levelIdx * 0.08) - this.phase * 0.15);
+            this.shootTimer = baseRate;
         }
     }
 
     _applyMovement(pattern, dt) {
         const W = CONFIG.GAME_WIDTH;
+        // La velocidad de animación (time) se ve afectada por el speedFactor
+        const effectiveTime = this.time * this.speedFactor;
+
         switch (pattern) {
             case 'spread':
-                this.x = W/2 + Math.sin(this.time * 1.2) * (W * 0.35);
-                this.y = this.targetY + Math.sin(this.time * 0.8) * 20;
+                this.x = W/2 + Math.sin(effectiveTime * 1.2) * (W * 0.35);
+                this.y = this.targetY + Math.sin(effectiveTime * 0.8) * 20;
                 break;
             case 'charge':
-                this.x = W/2 + Math.sin(this.time * 1.5) * (W * 0.3);
+                this.x = W/2 + Math.sin(effectiveTime * 1.5) * (W * 0.3);
                 // Occasionally charge downward
-                if (Math.sin(this.phaseTimer * 0.5) > 0.7) {
+                if (Math.sin(effectiveTime * 0.5) > 0.7) {
                     this.y = this.targetY + 60;
                 } else {
                     this.y += (this.targetY - this.y) * 2 * dt;
                 }
                 break;
             case 'circular':
-                this.x = W/2 + Math.cos(this.time * 1.0) * (W * 0.3);
-                this.y = this.targetY + Math.sin(this.time * 1.0) * 40;
+                this.x = W/2 + Math.cos(effectiveTime * 1.0) * (W * 0.3);
+                this.y = this.targetY + Math.sin(effectiveTime * 1.0) * 40;
                 break;
             case 'shield':
-                this.x = W/2 + Math.sin(this.time * 0.8) * (W * 0.25);
-                this.y = this.targetY + Math.sin(this.time * 1.5) * 15;
+                this.x = W/2 + Math.sin(effectiveTime * 0.8) * (W * 0.25);
+                this.y = this.targetY + Math.sin(effectiveTime * 1.5) * 15;
                 break;
             case 'spiral':
-                this.x = W/2 + Math.cos(this.time * 2) * (W * 0.25);
-                this.y = this.targetY + Math.sin(this.time * 2) * 30;
+                this.x = W/2 + Math.cos(effectiveTime * 2) * (W * 0.25);
+                this.y = this.targetY + Math.sin(effectiveTime * 2) * 30;
                 break;
             case 'diagonal':
-                this.x = W/2 + Math.sin(this.time * 1.8) * (W * 0.35);
-                this.y = this.targetY + Math.cos(this.time * 1.3) * 35;
+                this.x = W/2 + Math.sin(effectiveTime * 1.8) * (W * 0.35);
+                this.y = this.targetY + Math.cos(effectiveTime * 1.3) * 35;
                 break;
             case 'speed':
                 this.x = W/2 + Math.sin(this.time * 2.5) * (W * 0.4);
