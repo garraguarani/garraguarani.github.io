@@ -3,29 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="description" content="Garra Guaraní — Vertical Shooter Mobile del Mundial 2026. ¡Defendé la albirroja disparando pelotas contra rivales mundialistas!">
+    <meta name="description" content="Garra Guaraní — Vertical Shooter Mobile del Mundial 2026.">
     <meta name="theme-color" content="#CE1126">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    
     <title>Garra Guaraní 🇵🇾⚽</title>
-    
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div id="game-wrapper">
         <canvas id="game-canvas"></canvas>
-        
-        <!-- HUD Overlay -->
         <div id="hud" class="hud hidden">
             <div class="hud-top">
                 <div class="hud-health">
@@ -36,53 +30,49 @@
                 </div>
                 <div class="hud-score" id="hud-score">₲0</div>
                 <div class="hud-mega" id="hud-mega" style="margin-right:auto;">🏆×0</div>
-                <button id="btn-pause" class="hud-btn" style="width:30px; height:30px; border-radius:5px; padding:0; align-items:center; justify-content:center; flex-direction:column; margin-right:5px;" aria-label="Pausa">⏸</button>
-                <button id="btn-restart" class="hud-btn" style="width:30px; height:30px; border-radius:5px; padding:0; align-items:center; justify-content:center; flex-direction:column;" aria-label="Reiniciar">🔄</button>
+                <button id="btn-pause" class="hud-btn" style="width:30px;height:30px;border-radius:5px;padding:0;" aria-label="Pausa">⏸</button>
+                <button id="btn-restart" class="hud-btn" style="width:30px;height:30px;border-radius:5px;padding:0;margin-left:4px;" aria-label="Reiniciar">🔄</button>
             </div>
             <div class="hud-bottom">
                 <button id="btn-weapon" class="hud-btn" aria-label="Cambiar arma">⚽</button>
                 <div class="hud-garra-bar">
                     <div id="hud-garra-fill" class="hud-garra-fill"></div>
                 </div>
-                <button id="btn-garra" class="hud-btn hud-btn-garra" aria-label="Activar Garra Guaraní" disabled>🔥</button>
+                <button id="btn-garra" class="hud-btn hud-btn-garra" aria-label="Activar Garra" disabled>🔥</button>
             </div>
         </div>
-
-        <!-- Ad Placeholder -->
         <div id="ad-container" class="ad-container hidden">
-            <div class="ad-placeholder">
-                <span>— PUBLICIDAD —</span>
-            </div>
+            <div class="ad-placeholder"><span>— PUBLICIDAD —</span></div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="js/config.js?v=3"></script>
-    <script src="js/input.js?v=3"></script>
-    <script src="js/systems/pool.js?v=3"></script>
-    <script src="js/systems/background.js?v=3"></script>
-    <script src="js/systems/audio.js?v=5"></script>
-    <script src="js/systems/weather.js?v=3"></script>
-    <script src="js/systems/particle.js?v=3"></script>
-    <script src="js/systems/collision.js?v=3"></script>
-    <script src="js/systems/spawner.js?v=3"></script>
-    <script src="js/data/weapons.js?v=3"></script>
-    <script src="js/data/enemies.js?v=3"></script>
-    <script src="js/data/powerups.js?v=3"></script>
-    <script src="js/data/levels.js?v=3"></script>
-    <script src="js/entities/bullet.js?v=3"></script>
-    <script src="js/entities/enemy.js?v=3"></script>
-    <script src="js/entities/boss.js?v=3"></script>
-    <script src="js/entities/powerup.js?v=3"></script>
-    <script src="js/entities/player.js?v=3"></script>
-    <script src="js/renderer.js?v=5"></script>
-    <script src="js/screens/menu.js?v=5"></script>
-    <script src="js/screens/shop.js?v=4"></script>
-    <script src="js/screens/levelSelect.js?v=5"></script>
-    <script src="js/screens/controls.js?v=4"></script>
-    <script src="js/screens/gameOver.js?v=4"></script>
-    <script src="js/screens/victory.js?v=3"></script>
-    <script src="js/screens/hud.js?v=3"></script>
-    <script src="js/main.js?v=5"></script>
+    <!-- v=8: cache bust -->
+    <script src="js/config.js?v=8"></script>
+    <script src="js/input.js?v=8"></script>
+    <script src="js/systems/pool.js?v=8"></script>
+    <script src="js/systems/background.js?v=8"></script>
+    <script src="js/systems/audio.js?v=8"></script>
+    <script src="js/systems/weather.js?v=8"></script>
+    <script src="js/systems/particle.js?v=8"></script>
+    <script src="js/systems/collision.js?v=8"></script>
+    <script src="js/systems/spawner.js?v=8"></script>
+    <script src="js/data/weapons.js?v=8"></script>
+    <script src="js/data/enemies.js?v=8"></script>
+    <script src="js/data/powerups.js?v=8"></script>
+    <script src="js/data/levels.js?v=8"></script>
+    <script src="js/entities/bullet.js?v=8"></script>
+    <script src="js/entities/enemy.js?v=8"></script>
+    <script src="js/entities/boss.js?v=8"></script>
+    <script src="js/entities/powerup.js?v=8"></script>
+    <script src="js/entities/player.js?v=8"></script>
+    <script src="js/renderer.js?v=8"></script>
+    <script src="js/screens/menu.js?v=8"></script>
+    <script src="js/screens/shop.js?v=8"></script>
+    <script src="js/screens/levelSelect.js?v=8"></script>
+    <script src="js/screens/controls.js?v=8"></script>
+    <script src="js/screens/gameOver.js?v=8"></script>
+    <script src="js/screens/victory.js?v=8"></script>
+    <script src="js/screens/hud.js?v=8"></script>
+    <script src="js/main.js?v=8"></script>
 </body>
 </html>
