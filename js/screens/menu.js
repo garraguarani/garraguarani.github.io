@@ -104,16 +104,31 @@ const MenuScreen = (() => {
         ctx.fillStyle = '#4488FF';
         ctx.fillText('GUARANÍ', W/2, 82);
 
-        // ---- PROTAGONISTA (centrado, tamaño limitado) ----
         const protaImg = Renderer.getImage('menu_prota');
-        // Margen: imagen entre y=100 y y=305 → alto máximo 205
-        const imgH = 210;
-        const imgW = Math.round(imgH * 0.8); // ~168, pero limitado
-        const imgMaxW = 200;
-        const finalW = Math.min(imgW, imgMaxW);
-        const finalH = imgH;
-        const imgX = W/2 - finalW/2;
-        const imgY = 100 + Math.sin(time * 2) * 5;
+        let finalW, finalH, imgX, imgY;
+
+        if (protaImg) {
+            const nativeW = protaImg.width;
+            const nativeH = protaImg.height;
+            const ratio = nativeW / nativeH;
+
+            // Definir límites elegantes: Alto máximo ~220px, Ancho máximo ~75% del canvas
+            const maxAllowedH = 220;
+            const maxAllowedW = W * 0.75;
+
+            finalH = maxAllowedH;
+            finalW = finalH * ratio;
+
+            // Si el ancho resultante es muy grande, escalar hacia abajo por ancho
+            if (finalW > maxAllowedW) {
+                const scale = maxAllowedW / finalW;
+                finalW = maxAllowedW;
+                finalH *= scale;
+            }
+
+            imgX = W/2 - finalW/2;
+            imgY = 100 + Math.sin(time * 2) * 5;
+        }
 
         if (protaImg) {
             ctx.save();
