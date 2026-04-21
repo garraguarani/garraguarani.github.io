@@ -167,6 +167,7 @@ const Game = (() => {
         const result = ControlsScreen.update(dt);
         if (result === -1) {
             state = CONFIG.STATES.MENU;
+            Audio.playBGM('menu');
         }
     }
 
@@ -175,6 +176,7 @@ const Game = (() => {
         if (result === -1) {
             state = CONFIG.STATES.MENU;
             Audio.menuSelect();
+            Audio.playBGM('menu');
         } else if (result !== null && result >= 0) {
             _startLevel(result);
         }
@@ -273,6 +275,7 @@ const Game = (() => {
             player.fullReset();
             Audio.setAmbientVolume(0);
             Weather.setType('none');
+            Audio.playBGM('menu');
         }
     }
 
@@ -287,6 +290,7 @@ const Game = (() => {
             player.fullReset();
             Audio.setAmbientVolume(0);
             Weather.setType('none');
+            Audio.playBGM('menu');
         }
     }
 

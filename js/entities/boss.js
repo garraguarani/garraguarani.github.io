@@ -264,32 +264,34 @@ class Boss {
         const w = this.width;
         const h = this.height;
 
-        const img = Renderer.getImage('boss');
+        // Seleccionar imagen según el nivel actual
+        const levelIdx = window.Game ? window.Game.levelIndex : 0;
+        const BOSS_KEYS = ['boss', 'boss2', 'boss3', 'boss4', 'boss5', 'boss6', 'boss7', 'bossFinal'];
+        const imgKey = BOSS_KEYS[Math.min(levelIdx, BOSS_KEYS.length - 1)];
+        const img = Renderer.getImage(imgKey) || Renderer.getImage('boss');
+
         if (img) {
-            // Boss Glow
-            ctx.globalAlpha = 0.3 + Math.sin(this.time * 10) * 0.1;
+            // Aura pulsante dorada
+            ctx.save();
+            ctx.globalAlpha = 0.22 + Math.sin(this.time * 8) * 0.10;
             ctx.fillStyle = CONFIG.COLORS.PY_GOLD;
             ctx.beginPath();
-            ctx.arc(cx, cy, w * 0.8, 0, Math.PI * 2);
+            ctx.ellipse(cx, cy, w * 0.65, h * 0.5, 0, 0, Math.PI * 2);
             ctx.fill();
-            ctx.globalAlpha = 1;
-
-            // Shadow
-            ctx.fillStyle = 'rgba(0,0,0,0.3)';
-            ctx.beginPath();
-            ctx.ellipse(cx, cy + h/2 + 5, w/2, h/4, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Draw Sprite scaled
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.rotate(Math.PI);
-            ctx.drawImage(img, -w/2, -h/2, w, h);
             ctx.restore();
 
-            // Captain Armband (re-drawn on top of sprite)
-            ctx.fillStyle = CONFIG.COLORS.PY_GOLD;
-            ctx.fillRect(cx - w/2, cy - h/2 + 10, 8, 4);
+            // Sombra en el suelo
+            ctx.fillStyle = 'rgba(0,0,0,0.28)';
+            ctx.beginPath();
+            ctx.ellipse(cx, cy + h / 2 + 4, w / 2, h / 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Sprite derecho (SIN rotación)
+            if (this.flashTimer > 0) {
+                ctx.globalAlpha = 0.5 + Math.sin(this.time * 30) * 0.5;
+            }
+            ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
+            ctx.globalAlpha = 1;
         } else {
             this._drawProcedural(ctx, cx, cy, w, h);
         }

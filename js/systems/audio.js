@@ -233,7 +233,15 @@ const Audio = (() => {
     function coinPickup() { _note(1320, 0.05, 'sine', 0.18); _note(1760, 0.08, 'sine', 0.14, 0.05); }
     function menuSelect() { _note(700,  0.04, 'square', 0.09); }
     function gameOver()   { stopBGM(); _note(150, 0.6, 'sawtooth', 0.28); }
-    function victory()    { playBGM('menu'); }
+    function victory() {
+        // Fanfare ascendente: no reinicia el bucle de música durante el gameplay
+        _note(523, 0.15, 'square', 0.18);
+        _note(659, 0.15, 'square', 0.16, 0.15);
+        _note(784, 0.20, 'square', 0.18, 0.30);
+        _note(1047, 0.40, 'square', 0.20, 0.50);
+        _note(880, 0.15, 'sine',   0.10, 0.55);
+        _note(1047, 0.60, 'sine',  0.15, 0.70);
+    }
 
     function bossAppear() {
         _note(80,  1.4, 'sawtooth', 0.28);

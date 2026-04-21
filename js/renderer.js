@@ -32,13 +32,25 @@ const Renderer = (() => {
 
     async function loadAssets() {
         const assetList = {
-            hero_bg: 'assets/images/ui/hero_bg.png',
-            player: 'assets/images/sprites/player.png',
+            hero_bg:    'assets/images/ui/hero_bg.png',
+            player:     'assets/images/sprites/player.png',
             enemy_base: 'assets/images/sprites/enemy_base.png',
-            boss: 'assets/images/sprites/boss.png',
+            boss:       'assets/images/sprites/boss.png',
+            // Jefes por nivel
+            boss2:      'assets/images/boss-2.png',
+            boss3:      'assets/images/boss-3.png',
+            boss4:      'assets/images/boss-4.png',
+            boss5:      'assets/images/boss-5.png',
+            boss6:      'assets/images/boss-6.png',
+            boss7:      'assets/images/boss-7.png',
+            bossFinal:  'assets/images/boss-final.png',
+            // Pantalla de inicio
             menu_prota: 'assets/images/protagonista.png',
-            arbitro: 'assets/images/arbitro.png',
-            trophy: 'assets/images/ui/trophy.png'
+            // Enemigos especiales
+            arbitro:    'assets/images/arbitro.png',
+            hincha:     'assets/images/hincha.png',
+            hincha2:    'assets/images/hincha-2.png',
+            trophy:     'assets/images/ui/trophy.png'
         };
 
         const loaders = Object.entries(assetList).map(([name, url]) => {

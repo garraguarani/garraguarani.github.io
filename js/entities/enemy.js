@@ -182,25 +182,26 @@ class Enemy {
             return;
         }
 
-        // --- Dibujado de Sprite ---
+        // --- Dibujado de Sprite: SIN rotación, parado derecho ---
         let img = null;
         if (this.type === 'arbitro') {
             img = Renderer.getImage('arbitro');
+        } else if (this.type === 'hincha2') {
+            img = Renderer.getImage('hincha2');
+        } else if (this.type === 'hincha') {
+            img = Renderer.getImage('hincha');
         } else {
             img = Renderer.getImage('enemy_base');
         }
 
         if (img) {
-            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            // Sombra en el suelo
+            ctx.fillStyle = 'rgba(0,0,0,0.18)';
             ctx.beginPath();
-            ctx.ellipse(cx, cy + h / 2, w / 3, h / 6, 0, 0, Math.PI * 2);
+            ctx.ellipse(cx, cy + h / 2 + 2, w / 3, h / 7, 0, 0, Math.PI * 2);
             ctx.fill();
-
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.rotate(Math.PI);
-            ctx.drawImage(img, -w / 2, -h / 2, w, h);
-            ctx.restore();
+            // Sprite directo, sin rotación
+            ctx.drawImage(img, cx - w / 2, cy - h / 2, w, h);
         } else {
             this._drawProcedural(ctx, cx, cy, w, h);
         }

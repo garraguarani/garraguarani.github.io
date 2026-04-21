@@ -124,16 +124,7 @@ const MenuScreen = (() => {
         // ---- PELOTAS FLOTANTES (en los costados, no en el centro) ----
         _drawFloatingBalls(ctx, W, H, time);
 
-        // ---- SEPARADOR ----
-        const sepY = BTN_START_Y - 22;
-        ctx.strokeStyle = CONFIG.COLORS.PY_RED;
-        ctx.lineWidth = 2;
-        ctx.setLineDash([6, 4]);
-        ctx.beginPath();
-        ctx.moveTo(40, sepY);
-        ctx.lineTo(W - 40, sepY);
-        ctx.stroke();
-        ctx.setLineDash([]);
+        // (Separador eliminado por solicitud del usuario)
 
         // ---- BOTONES ----
         for (let i = 0; i < OPTIONS.length; i++) {
