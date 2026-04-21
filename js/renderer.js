@@ -36,9 +36,9 @@ const Renderer = (() => {
             player: 'assets/images/sprites/player.png',
             enemy_base: 'assets/images/sprites/enemy_base.png',
             boss: 'assets/images/sprites/boss.png',
-            protagonist: 'assets/images/protagonist.png',
-            trophy: 'assets/images/ui/trophy.png',
-            protagonista_inicio: 'assets/images/ui/protagonista-inicio.png'
+            menu_prota: 'assets/images/protagonista.png',
+            arbitro: 'assets/images/arbitro.png',
+            trophy: 'assets/images/ui/trophy.png'
         };
 
         const loaders = Object.entries(assetList).map(([name, url]) => {
@@ -48,7 +48,10 @@ const Renderer = (() => {
                     images[name] = img;
                     resolve();
                 };
-                img.onerror = resolve; // Continue even if one fails
+                img.onerror = () => {
+                    console.log(`Failed to load: ${url}`);
+                    resolve();
+                };
                 img.src = url;
             });
         });
@@ -68,11 +71,9 @@ const Renderer = (() => {
 
         let displayW, displayH;
         if (windowRatio < gameRatio) {
-            // Window is taller (portrait) — fit width
             displayW = windowW;
             displayH = windowW / gameRatio;
         } else {
-            // Window is wider — fit height
             displayH = windowH;
             displayW = windowH * gameRatio;
         }
@@ -83,15 +84,12 @@ const Renderer = (() => {
         scaleX = displayW / CONFIG.GAME_WIDTH;
         scaleY = displayH / CONFIG.GAME_HEIGHT;
 
-        // Update input scale
         Input.updateScale(scaleX, scaleY);
 
-        // Position HUD overlay to match canvas
         const hud = document.getElementById('hud');
         if (hud) {
             hud.style.width = displayW + 'px';
             hud.style.height = displayH + 'px';
-            // Center the HUD
             hud.style.left = ((windowW - displayW) / 2) + 'px';
             hud.style.top = ((windowH - displayH) / 2) + 'px';
         }
