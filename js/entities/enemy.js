@@ -118,7 +118,6 @@ class Enemy {
                         Audio.hinchaCharge();
                     }
                     this.y += this.speed * 1.5 * dt;
-                    // Lerp towards player X
                     if (window.Game && window.Game.player) {
                         this.x += (window.Game.player.x - this.x) * 2 * dt;
                     }
@@ -135,8 +134,6 @@ class Enemy {
             default:
                 this.y += this.speed * dt;
         }
-
-        // Clamp X
         this.x = Math.max(10, Math.min(CONFIG.GAME_WIDTH - 10, this.x));
     }
 
@@ -179,29 +176,32 @@ class Enemy {
         const w = this.width;
         const h = this.height;
 
-        // Flash white when hit
         if (this.flashTimer > 0) {
             ctx.fillStyle = '#FFFFFF';
             ctx.fillRect(cx - w / 2, cy - h / 2, w, h);
             return;
         }
 
-        const img = Renderer.getImage(this.type === 'arbitro' ? 'arbitro_base' : 'enemy_base');
+        // --- Dibujado de Sprite ---
+        let img = null;
+        if (this.type === 'arbitro') {
+            img = Renderer.getImage('arbitro');
+        } else {
+            img = Renderer.getImage('enemy_base');
+        }
+
         if (img) {
-            // Shadow
             ctx.fillStyle = 'rgba(0,0,0,0.2)';
             ctx.beginPath();
             ctx.ellipse(cx, cy + h / 2, w / 3, h / 6, 0, 0, Math.PI * 2);
             ctx.fill();
 
-            // Draw Sprite (rotated to face down)
             ctx.save();
             ctx.translate(cx, cy);
-            ctx.rotate(Math.PI); // Enemies face down
+            ctx.rotate(Math.PI);
             ctx.drawImage(img, -w / 2, -h / 2, w, h);
             ctx.restore();
         } else {
-            // Fallback
             this._drawProcedural(ctx, cx, cy, w, h);
         }
     }
@@ -209,15 +209,12 @@ class Enemy {
     _drawProcedural(ctx, cx, cy, w, h) {
         const [mainColor, accentColor, altColor] = this.colors;
         ctx.fillStyle = mainColor;
-        
         if (this.type === 'arbitro') {
-            // Simple referee block with black/white stripes
             for(let i=0; i<w; i+=4) {
                 ctx.fillStyle = (i/4)%2 === 0 ? '#000' : '#FFF';
                 ctx.fillRect(cx - w/2 + i, cy - h/2, 4, h);
             }
         } else if (this.type === 'hincha') {
-            // Hincha with a different color/shape
             ctx.fillStyle = '#FFDD00';
             ctx.fillRect(cx - w/2, cy - h/2, w, h);
             ctx.fillStyle = '#000';
