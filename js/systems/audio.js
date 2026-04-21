@@ -1,7 +1,7 @@
 /* ============================================
-   GARRA GUARANÍ — Audio System 2.2
-   16-bit Professional Synthetic Engine
-   Improved Menu Audio (Soft waveforms)
+   GARRA GUARANÍ — Audio System 3.0
+   Engine sintético de 3 capas
+   Melodía + Arpeggio + Bajo + Pad + Percusión
    ============================================ */
 
 const Audio = (() => {
@@ -27,20 +27,16 @@ const Audio = (() => {
         ambientGain = ctx.createGain();
         ambientGain.gain.setValueAtTime(0, ctx.currentTime);
         ambientGain.connect(ctx.destination);
-
         const bufferSize = ctx.sampleRate * 2;
         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-
         const source = ctx.createBufferSource();
         source.buffer = buffer;
         source.loop = true;
-
         const filter = ctx.createBiquadFilter();
         filter.type = 'lowpass';
         filter.frequency.setValueAtTime(400, ctx.currentTime);
-
         source.connect(filter);
         filter.connect(ambientGain);
         source.start();
@@ -52,172 +48,222 @@ const Audio = (() => {
     }
 
     function resume() {
-        if (ctx && ctx.state === 'suspended') {
-            ctx.resume();
-        }
+        if (ctx && ctx.state === 'suspended') ctx.resume();
     }
 
-    function _playTone(freq, duration, type = 'square', volume = 0.3, detune = 0, fadeOut = true) {
+    function _note(freq, dur, type = 'triangle', vol = 0.1, delay = 0) {
         if (!enabled || !ctx) return;
         try {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.type = type;
-            osc.frequency.setValueAtTime(freq, ctx.currentTime);
-            osc.detune.setValueAtTime(detune, ctx.currentTime);
-            gain.gain.setValueAtTime(volume * masterVolume, ctx.currentTime);
-            if (fadeOut) {
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-            }
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+            gain.gain.setValueAtTime(0, ctx.currentTime + delay);
+            gain.gain.linearRampToValueAtTime(vol * masterVolume, ctx.currentTime + delay + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
             osc.connect(gain);
             gain.connect(ctx.destination);
-            osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + duration);
-        } catch(e){}
+            osc.start(ctx.currentTime + delay);
+            osc.stop(ctx.currentTime + delay + dur + 0.05);
+        } catch(e) {}
     }
 
-    function _playBass(freq, duration, volume = 0.2) {
-        // Softer bass for menu if needed, but keeping for level
-        _playTone(freq, duration, 'triangle', volume * 1.5, 0);
-        _playTone(freq, duration * 0.8, 'sawtooth', volume * 0.5, 5);
+    function _noise(dur, vol = 0.1, filterFreq = 800, delay = 0) {
+        if (!enabled || !ctx) return;
+        try {
+            const size = Math.max(1, Math.floor(ctx.sampleRate * dur));
+            const buffer = ctx.createBuffer(1, size, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < size; i++) data[i] = Math.random() * 2 - 1;
+            const source = ctx.createBufferSource();
+            source.buffer = buffer;
+            const filt = ctx.createBiquadFilter();
+            filt.frequency.setValueAtTime(filterFreq, ctx.currentTime);
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(vol * masterVolume, ctx.currentTime + delay);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
+            source.connect(filt);
+            filt.connect(gain);
+            gain.connect(ctx.destination);
+            source.start(ctx.currentTime + delay);
+        } catch(e) {}
     }
 
-    const MELODIES = {
-        menu: {
-            tempo: 130, // Relaxed tempo
-            lead: [
-                [261, 8], [293, 8], [329, 8], [349, 8], [392, 4], [0, 8], [349, 8], [329, 4]
-            ],
-            bass: [
-                [130, 4], [146, 8], [130, 8], [110, 4], [123, 4]
-            ],
-            type: 'triangle' // Much softer than square
-        },
-        level: { 
-            tempo: 170,
-            lead: [
-                [392, 16], [392, 16], [440, 16], [392, 16], [523, 8], [493, 8],
-                [392, 16], [392, 16], [440, 16], [392, 16], [587, 8], [523, 8]
-            ],
-            bass: [
-                [98, 8], [98, 8], [110, 8], [98, 8], [130, 8], [123, 8],
-                [98, 8], [98, 8], [110, 8], [98, 8], [146, 8], [130, 8]
-            ],
-            drums: [true, false, true, false, true, false, true, false],
-            type: 'square' // Fast & exciting for gameplay
+    // =========================================
+    // MELODÍAS (3 capas por tipo)
+    // =========================================
+
+    // -- MENU: Himno épico en C mayor, 128 BPM --
+    // Cada paso es una corchea (1/8 note)
+    // step = [freq, durInSteps]
+    const MENU_MELODY = [
+        [523, 2], [587, 1], [659, 1], [698, 2], [659, 2],
+        [523, 1], [587, 1], [659, 2], [523, 4],
+        [659, 2], [698, 1], [784, 1], [880, 4],
+        [784, 2], [698, 1], [659, 1], [523, 4]
+    ];
+
+    const MENU_BASS = [
+        [131, 4], [165, 4], [196, 4], [131, 4],
+        [131, 4], [165, 4], [196, 4], [165, 4]
+    ];
+
+    // Arpeggio alternado: C-E-G / A-C-E / F-A-C / G-B-D
+    const MENU_ARP = [
+        262, 330, 392, 220, 262, 330,
+        175, 220, 262, 196, 247, 294,
+        262, 330, 392, 220, 262, 330,
+        175, 220, 262, 247, 294, 330
+    ];
+
+    // -- LEVEL: Metal urgente en E menor, 170 BPM --
+    const LEVEL_MELODY = [
+        [659, 1], [659, 1], [784, 1], [659, 1], [880, 2], [831, 2],
+        [698, 1], [698, 1], [784, 1], [698, 1], [988, 2], [880, 2],
+        [659, 1], [0, 1], [659, 1], [784, 1], [659, 2], [0, 2],
+        [523, 1], [587, 1], [659, 2], [587, 1], [523, 4]
+    ];
+
+    const LEVEL_BASS = [
+        [82, 2], [82, 2], [98, 2], [82, 2],
+        [110, 2], [98, 2], [82, 4],
+        [82, 2], [82, 2], [73, 2], [82, 4]
+    ];
+
+    function _bgmLoop(type) {
+        if (!isPlayingBgm || !ctx) return;
+
+        const isMenu = type === 'menu';
+        const BPM = isMenu ? 128 : 170;
+        const eighth = (60 / BPM) / 2; // duración de una corchea en segundos
+
+        const melody = isMenu ? MENU_MELODY : LEVEL_MELODY;
+        const bass   = isMenu ? MENU_BASS   : LEVEL_BASS;
+
+        // ---- CAPA 1: Melodía principal ----
+        let tLead = 0;
+        for (const [freq, steps] of melody) {
+            const dur = eighth * steps;
+            if (freq > 0) _note(freq, dur * 0.85, isMenu ? 'triangle' : 'square', isMenu ? 0.07 : 0.08, tLead);
+            tLead += dur;
         }
-    };
+
+        // ---- CAPA 2: Bajo ----
+        let tBass = 0;
+        for (const [freq, steps] of bass) {
+            const dur = eighth * steps;
+            _note(freq, dur * 0.7, 'triangle', isMenu ? 0.10 : 0.14, tBass);
+            // sub-bass con sawtooth
+            _note(freq, dur * 0.5, 'sawtooth', isMenu ? 0.04 : 0.06, tBass + 0.01);
+            tBass += dur;
+        }
+
+        // ---- CAPA 3: Arpeggio (solo menu) ----
+        if (isMenu) {
+            for (let i = 0; i < MENU_ARP.length; i++) {
+                _note(MENU_ARP[i], eighth * 0.4, 'sine', 0.04, i * eighth);
+            }
+        }
+
+        // ---- CAPA 4: Pad envolvente (solo menu) ----
+        if (isMenu) {
+            // Acorde C-E-G suave y largo
+            const padFreqs = [262, 330, 392];
+            const padDur = eighth * MENU_ARP.length;
+            for (const f of padFreqs) {
+                _note(f, padDur * 0.95, 'sine', 0.025);
+            }
+        }
+
+        // ---- CAPA 5: Percusión ----
+        const totalSteps = isMenu ? MENU_ARP.length : 16;
+        for (let i = 0; i < totalSteps; i++) {
+            const t = i * eighth;
+            // Kick en tiempos 1 y 3
+            if (i % 4 === 0) _noise(0.12, isMenu ? 0.06 : 0.09, 120, t);
+            // Snare en tiempos 2 y 4
+            if (i % 4 === 2) _noise(0.10, isMenu ? 0.04 : 0.07, 2000, t);
+            // Hi-hat en todos
+            if (!isMenu && i % 2 === 1) _noise(0.04, 0.02, 8000, t);
+        }
+
+        const loopDuration = eighth * totalSteps * 1000;
+        bgmTimer = setTimeout(() => _bgmLoop(type), loopDuration);
+    }
 
     function playBGM(type = 'menu') {
         if (!enabled || !ctx) return;
         resume();
         stopBGM();
         isPlayingBgm = true;
-        const melody = MELODIES[type] || MELODIES.menu;
-        let step = 0;
-
-        function nextStep() {
-            if (!isPlayingBgm) return;
-            
-            const stepDuration = (60 / melody.tempo) / 4;
-            const waveType = melody.type || 'square';
-            
-            if (melody.lead) {
-                const note = melody.lead[step % melody.lead.length];
-                if (note[0] > 0) _playTone(note[0], stepDuration * (16/note[1]), waveType, 0.08);
-            }
-            if (melody.bass) {
-                const bNote = melody.bass[step % melody.bass.length];
-                if (bNote[0] > 0) {
-                    const bassType = type === 'menu' ? 'triangle' : 'sawtooth';
-                    _playTone(bNote[0], stepDuration * (16/bNote[1]), bassType, 0.1);
-                }
-            }
-            if (melody.drums && melody.drums[step % melody.drums.length]) {
-                const noiseVol = type === 'menu' ? 0.02 : 0.04;
-                _playNoise(0.04, noiseVol, 1500);
-            }
-            step++;
-            bgmTimer = setTimeout(nextStep, stepDuration * 1000);
-        }
-        nextStep();
+        _bgmLoop(type);
     }
 
     function stopBGM() {
         isPlayingBgm = false;
-        if (bgmTimer) clearTimeout(bgmTimer);
+        if (bgmTimer) { clearTimeout(bgmTimer); bgmTimer = null; }
     }
 
-    function _playNoise(duration, volume = 0.2, filterFreq = 1000) {
-        if (!enabled || !ctx) return;
-        try {
-            const bufferSize = ctx.sampleRate * duration;
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-            const source = ctx.createBufferSource();
-            source.buffer = buffer;
-            const filter = ctx.createBiquadFilter();
-            filter.frequency.setValueAtTime(filterFreq, ctx.currentTime);
-            const gain = ctx.createGain();
-            gain.gain.setValueAtTime(volume * masterVolume, ctx.currentTime);
-            source.connect(filter);
-            filter.connect(gain);
-            gain.connect(ctx.destination);
-            source.start();
-        } catch(e){}
+    // =========================================
+    // SFX
+    // =========================================
+    function shoot()      { _note(1046, 0.05, 'square', 0.09); }
+    function enemyHit()   { _note(185, 0.07, 'sawtooth', 0.11); }
+    function enemyDie()   { _noise(0.18, 0.18, 500); }
+    function playerHit()  { _noise(0.28, 0.30, 150); }
+    function powerup()    { _note(880, 0.08, 'sine', 0.13); _note(1100, 0.13, 'sine', 0.12, 0.07); }
+    function coinPickup() { _note(1320, 0.05, 'sine', 0.18); _note(1760, 0.08, 'sine', 0.14, 0.05); }
+    function menuSelect() { _note(700, 0.04, 'square', 0.09); }
+    function gameOver()   { stopBGM(); _note(150, 0.6, 'sawtooth', 0.28); }
+    function victory()    { playBGM('menu'); }
+
+    function bossAppear() {
+        _note(80,  1.5, 'sawtooth', 0.28);
+        _note(100, 1.2, 'sawtooth', 0.18, 0.1);
+        _noise(0.5, 0.18, 180);
     }
 
-    function shoot() { _playTone(1000, 0.05, 'square', 0.1); }
-    function enemyHit() { _playTone(180, 0.07, 'sawtooth', 0.12); }
-    function enemyDie() { _playNoise(0.2, 0.2, 500); }
-    function playerHit() { _playNoise(0.3, 0.35, 150); }
-    function powerup() { _playTone(880, 0.1, 'sine', 0.15); setTimeout(()=>_playTone(1100, 0.15, 'sine', 0.15), 70); }
-    function coinPickup() { _playTone(1320, 0.05, 'sine', 0.2); setTimeout(()=>_playTone(1760, 0.08, 'sine', 0.15), 50); }
-    function victory() { playBGM('menu'); }
-    function gameOver() { stopBGM(); _playTone(150, 0.6, 'sawtooth', 0.3); }
-    function menuSelect() { _playTone(700, 0.05, 'square', 0.1); }
-    function bossAppear() { _playTone(100, 1.5, 'sawtooth', 0.3); _playNoise(0.5, 0.2, 200); }
-    
     function garraActivate() {
-        _playTone(100, 0.5, 'sawtooth', 0.3, 0, false);
-        _playTone(200, 0.5, 'sawtooth', 0.2, 0, false);
-        _playNoise(1.0, 0.3, 300);
+        _note(110, 0.5, 'sawtooth', 0.28);
+        _note(220, 0.5, 'sawtooth', 0.18, 0.05);
+        _noise(0.8, 0.25, 300);
     }
 
     function megaGol() {
-        _playTone(110, 0.2, 'square', 0.4);
-        setTimeout(() => _playTone(220, 0.4, 'sawtooth', 0.3), 100);
-        _playNoise(1.5, 0.5, 100);
+        _note(110, 0.2, 'square', 0.35);
+        _note(220, 0.4, 'sawtooth', 0.28, 0.1);
+        _noise(1.5, 0.40, 90);
     }
 
     function hinchaCharge() {
-        const duration = 0.5;
         try {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(120, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + duration);
-            gain.gain.setValueAtTime(0.15 * masterVolume, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + duration);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(); osc.stop(ctx.currentTime + duration);
-        } catch(e){}
+            osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.45);
+            gain.gain.setValueAtTime(0.14 * masterVolume, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.45);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + 0.5);
+        } catch(e) {}
     }
 
     function arbitroWhistle() {
-        _playTone(2200, 0.1, 'sine', 0.15);
-        setTimeout(() => _playTone(2200, 0.25, 'sine', 0.15), 120);
+        _note(2200, 0.08, 'sine', 0.14);
+        _note(2200, 0.22, 'sine', 0.14, 0.12);
     }
 
-    function cardToss() { _playNoise(0.1, 0.08, 4000); }
-    function setEnabled(val) { enabled = val; if (!val) stopBGM(); }
+    function cardToss() { _noise(0.09, 0.07, 4500); }
+
+    function setEnabled(val) {
+        enabled = val;
+        if (!val) stopBGM();
+    }
 
     return {
         init, resume, setEnabled, playBGM, stopBGM, setAmbientVolume,
-        shoot, enemyHit, enemyDie, playerHit, powerup, victory, gameOver, 
+        shoot, enemyHit, enemyDie, playerHit, powerup, victory, gameOver,
         menuSelect, hinchaCharge, arbitroWhistle, cardToss, bossAppear,
         garraActivate, megaGol, coinPickup
     };
