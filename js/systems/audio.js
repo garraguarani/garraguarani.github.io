@@ -8,6 +8,7 @@ const Audio = (() => {
     let ctx = null;
     let enabled = true;
     let masterVolume = 0.5;
+    let masterGain = null;   // Nodo central: permite mute instantáneo
     let bgmTimer = null;
     let isPlayingBgm = false;
     let ambientGain = null;
@@ -15,6 +16,10 @@ const Audio = (() => {
     function init() {
         try {
             ctx = new (window.AudioContext || window.webkitAudioContext)();
+            // Master gain — permite mute instantáneo de todo el audio
+            masterGain = ctx.createGain();
+            masterGain.gain.value = 1.0;
+            masterGain.connect(ctx.destination);
             _initAmbient();
         } catch (e) {
             console.warn('Web Audio API not supported');
@@ -26,7 +31,7 @@ const Audio = (() => {
         if (!ctx) return;
         ambientGain = ctx.createGain();
         ambientGain.gain.setValueAtTime(0, ctx.currentTime);
-        ambientGain.connect(ctx.destination);
+        ambientGain.connect(masterGain);  // → masterGain → destination
         const sz = ctx.sampleRate * 2;
         const buf = ctx.createBuffer(1, sz, ctx.sampleRate);
         const d = buf.getChannelData(0);
@@ -49,7 +54,7 @@ const Audio = (() => {
 
     /* Genera un tono simple */
     function _note(freq, dur, type = 'triangle', vol = 0.1, delay = 0) {
-        if (!enabled || !ctx || freq <= 0) return;
+        if (!enabled || !ctx || !masterGain || freq <= 0) return;
         try {
             const osc = ctx.createOscillator();
             const g = ctx.createGain();
@@ -58,7 +63,7 @@ const Audio = (() => {
             g.gain.setValueAtTime(0, ctx.currentTime + delay);
             g.gain.linearRampToValueAtTime(vol * masterVolume, ctx.currentTime + delay + 0.008);
             g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
-            osc.connect(g); g.connect(ctx.destination);
+            osc.connect(g); g.connect(masterGain);  // → masterGain → destination
             osc.start(ctx.currentTime + delay);
             osc.stop(ctx.currentTime + delay + dur + 0.05);
         } catch(e) {}
@@ -66,7 +71,7 @@ const Audio = (() => {
 
     /* Genera ruido filtrado (percusión) */
     function _noise(dur, vol = 0.1, filterFreq = 800, delay = 0) {
-        if (!enabled || !ctx) return;
+        if (!enabled || !ctx || !masterGain) return;
         try {
             const sz = Math.max(1, Math.floor(ctx.sampleRate * dur));
             const buf = ctx.createBuffer(1, sz, ctx.sampleRate);
@@ -79,7 +84,7 @@ const Audio = (() => {
             const g = ctx.createGain();
             g.gain.setValueAtTime(vol * masterVolume, ctx.currentTime + delay);
             g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
-            src.connect(flt); flt.connect(g); g.connect(ctx.destination);
+            src.connect(flt); flt.connect(g); g.connect(masterGain);  // → masterGain
             src.start(ctx.currentTime + delay);
         } catch(e) {}
     }
@@ -131,68 +136,44 @@ const Audio = (() => {
         [196,247,330],  // D
     ];
 
-    /**
-     * LEVEL — Metal urgente 172 BPM, escala de E frigio
-     */
-    const LEVEL_LEAD = [
-        [659,1],[659,1],[784,1],[659,1],[0,1],[831,1],[784,2],
-        [698,1],[698,1],[784,1],[698,1],[0,1],[988,1],[880,2],
-        [659,1],[0,1],[659,1],[784,1],[659,2],[523,2],
-        [659,2],[587,2],[523,2],[587,4]
-    ]; // 28 steps
-
-    const LEVEL_BASS = [
-        [82,4],[82,2],[98,2],[110,4],[98,4],
-        [82,4],[73,4],[82,8]
-    ]; // 32 steps
+    // (Solo se usaba internamente — eliminado para que la música sea únicamente del menú)
 
     function _bgmLoop(type) {
         if (!isPlayingBgm || !ctx) return;
-        const isMenu = type === 'menu';
-        const BPM = isMenu ? 150 : 172;
-        const step = 60 / BPM / 4; // duración de 1 semicorchea en segundos
+        // Solo se reproduce el tema de menú
+        const BPM = 150;
+        const step = 60 / BPM / 4;
 
         // ----- CAPA 1: Melodía lead -----
-        const lead = isMenu ? MENU_LEAD : LEVEL_LEAD;
         let t = 0;
-        for (const [freq, steps] of lead) {
+        for (const [freq, steps] of MENU_LEAD) {
             const dur = step * steps;
-            if (freq > 0) {
-                _note(freq, dur * 0.80, isMenu ? 'square' : 'sawtooth',
-                      isMenu ? 0.07 : 0.08, t);
-            }
+            if (freq > 0) _note(freq, dur * 0.80, 'square', 0.07, t);
             t += dur;
         }
-        const loopDur = t; // duración real del loop
+        const loopDur = t;
 
         // ----- CAPA 2: Bajo -----
-        const bass = isMenu ? MENU_BASS : LEVEL_BASS;
         let tb = 0;
-        for (const [freq, steps] of bass) {
+        for (const [freq, steps] of MENU_BASS) {
             const dur = step * steps;
-            _note(freq,       dur * 0.7, 'triangle', isMenu ? 0.11 : 0.14, tb);
-            _note(freq * 0.5, dur * 0.4, 'sawtooth', isMenu ? 0.04 : 0.06, tb + 0.01);
+            _note(freq,       dur * 0.7, 'triangle', 0.11, tb);
+            _note(freq * 0.5, dur * 0.4, 'sawtooth', 0.04, tb + 0.01);
             tb += dur;
-            if (tb >= loopDur) break; // no sobrepasar el loop
+            if (tb >= loopDur) break;
         }
 
-        // ----- CAPA 3: Arpeggio de 16vas (solo menu) -----
-        if (isMenu) {
-            for (let i = 0; i < MENU_ARP.length && i * step < loopDur; i++) {
-                const freq = MENU_ARP[i];
-                _note(freq, step * 0.45, 'sine', 0.035, i * step);
-            }
+        // ----- CAPA 3: Arpeggio -----
+        for (let i = 0; i < MENU_ARP.length && i * step < loopDur; i++) {
+            _note(MENU_ARP[i], step * 0.45, 'sine', 0.035, i * step);
         }
 
-        // ----- CAPA 4: Pad armónico (solo menu) -----
-        if (isMenu) {
-            for (let ci = 0; ci < MENU_CHORDS.length; ci++) {
-                const chordTime = ci * step * 8;
-                if (chordTime >= loopDur) break;
-                const chordDur = step * 7.5;
-                for (const f of MENU_CHORDS[ci]) {
-                    _note(f, chordDur, 'sine', 0.022, chordTime);
-                }
+        // ----- CAPA 4: Pad armónico -----
+        for (let ci = 0; ci < MENU_CHORDS.length; ci++) {
+            const chordTime = ci * step * 8;
+            if (chordTime >= loopDur) break;
+            for (const f of MENU_CHORDS[ci]) {
+                _note(f, step * 7.5, 'sine', 0.022, chordTime);
             }
         }
 
@@ -200,10 +181,9 @@ const Audio = (() => {
         const totalSteps = Math.round(loopDur / step);
         for (let i = 0; i < totalSteps; i++) {
             const pt = i * step;
-            if (i % 8 === 0)                        _noise(0.14, isMenu ? 0.07 : 0.10, 100,  pt); // Kick
-            if (i % 8 === 4)                        _noise(0.12, isMenu ? 0.05 : 0.08, 2500, pt); // Snare
-            if (!isMenu && i % 2 === 1)             _noise(0.04, 0.025, 9000, pt);               // Hi-hat nivel
-            if (isMenu && i % 16 === 12)            _noise(0.06, 0.035, 6000, pt);               // Open hi-hat menu
+            if (i % 8 === 0)     _noise(0.14, 0.07, 100,  pt);  // Kick
+            if (i % 8 === 4)     _noise(0.12, 0.05, 2500, pt);  // Snare
+            if (i % 16 === 12)   _noise(0.06, 0.035, 6000, pt); // Open hi-hat
         }
 
         bgmTimer = setTimeout(() => _bgmLoop(type), loopDur * 1000);
@@ -214,7 +194,8 @@ const Audio = (() => {
         resume();
         stopBGM();
         isPlayingBgm = true;
-        _bgmLoop(type);
+        // Solo reproducimos el tema de menú (petición del usuario)
+        _bgmLoop('menu');
     }
 
     function stopBGM() {
@@ -263,6 +244,7 @@ const Audio = (() => {
 
     function hinchaCharge() {
         try {
+            if (!ctx || !masterGain) return;
             const osc = ctx.createOscillator();
             const g = ctx.createGain();
             osc.type = 'sawtooth';
@@ -270,7 +252,7 @@ const Audio = (() => {
             osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.45);
             g.gain.setValueAtTime(0.14 * masterVolume, ctx.currentTime);
             g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.45);
-            osc.connect(g); g.connect(ctx.destination);
+            osc.connect(g); g.connect(masterGain);  // → masterGain
             osc.start(); osc.stop(ctx.currentTime + 0.5);
         } catch(e) {}
     }
@@ -284,7 +266,13 @@ const Audio = (() => {
 
     function setEnabled(val) {
         enabled = val;
-        if (!val) stopBGM();
+        if (masterGain && ctx) {
+            // Mute/unmute instantáneo a través del master gain
+            masterGain.gain.setValueAtTime(val ? 1.0 : 0, ctx.currentTime);
+        }
+        if (!val) {
+            stopBGM();
+        }
     }
 
     return {
