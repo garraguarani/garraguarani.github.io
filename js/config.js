@@ -84,7 +84,7 @@ const CONFIG = {
     TEAMS: {
         USA: { name: 'USA', flag: '🇺🇸', colors: ['#002868', '#BF0A30', '#FFFFFF'], difficulty: 1 },
         TUR: { name: 'Turquia', flag: '🇹🇷', colors: ['#E30A17', '#FFFFFF', '#E30A17'], difficulty: 1.3 },
-        AUS: { name: 'Austr.', flag: '🇦🇺', colors: ['#FFD700', '#008751', '#002868'], difficulty: 1.5 },
+        AUS: { name: 'Australia', flag: '🇦🇺', colors: ['#FFD700', '#008751', '#002868'], difficulty: 1.5 },
         // Knockout round random pool
         MEX: { name: 'Mexico', flag: '🇲🇽', colors: ['#006847', '#FFFFFF', '#CE1126'], difficulty: 1.7 },
         GER: { name: 'Alemania', flag: '🇩🇪', colors: ['#000000', '#DD0000', '#FFCC00'], difficulty: 1.9 },
