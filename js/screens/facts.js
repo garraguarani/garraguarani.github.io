@@ -25,12 +25,26 @@ const FactsScreen = (() => {
                 h: 45,
                 color: CONFIG.COLORS.PY_RED,
                 textColor: '#FFFFFF',
-                action: 'next'
-            }
-        ];
+        const W = CONFIG.GAME_WIDTH;
+        const H = CONFIG.GAME_HEIGHT;
+
+        buttons.length = 0;
+        buttons.push({
+            x: W / 2,
+            y: H - 80,
+            w: 220,
+            h: 50,
+            text: 'CONTINUAR ▶',
+            color: CONFIG.COLORS.PY_RED,
+            textColor: '#FFFFFF',
+            action: 'next'
+        });
+        
+        time = 0;
     }
 
     function update(dt, input) {
+        time += dt;
         let action = null;
         
         if (input.isTapActive()) {
@@ -55,15 +69,31 @@ const FactsScreen = (() => {
         const W = CONFIG.GAME_WIDTH;
         const H = CONFIG.GAME_HEIGHT;
 
-        // Background
-        ctx.fillStyle = CONFIG.COLORS.BG_DARK;
+        // ---- FONDO DE CANCHA (v30) ----
+        Background.draw(ctx);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.65)'; // Overlay para legibilidad
         ctx.fillRect(0, 0, W, H);
 
-        // Header Title
+        // ---- TÍTULO OFICIAL (v30) ----
         ctx.textAlign = 'center';
-        ctx.font = '16px "Press Start 2P"';
-        ctx.fillStyle = CONFIG.COLORS.PY_GOLD;
-        ctx.fillText('¿SABÍAS QUÉ?', W/2, 60);
+        ctx.textBaseline = 'middle';
+
+        // Sombra
+        ctx.font = '22px "Press Start 2P"';
+        ctx.fillStyle = 'rgba(100,0,0,0.8)';
+        ctx.fillText('GARRA', W/2 + 2, 54 + Math.sin(time * 2) * 2);
+        // Texto
+        ctx.fillStyle = CONFIG.COLORS.PY_RED;
+        ctx.fillText('GARRA', W/2, 52 + Math.sin(time * 2) * 2);
+
+        // Franja blanca
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(W/2 - 70, 66 + Math.sin(time * 2) * 2, 140, 3);
+
+        // Subtítulo
+        ctx.font = '14px "Press Start 2P"';
+        ctx.fillStyle = '#4488FF';
+        ctx.fillText('GUARANÍ', W/2, 82 + Math.sin(time * 2) * 2);
 
         // Fact Image
         const img = Renderer.getImage(`fact${factId}`);
@@ -73,8 +103,8 @@ const FactsScreen = (() => {
             const targetW = W - padding * 2;
             const targetH = (targetW / img.width) * img.height;
             
-            // v29: Ligeramente más abajo (135) para mejor composición
-            ctx.drawImage(img, W/2 - targetW/2, 135, targetW, targetH);
+            // v30: Layout ajustado para el logo
+            ctx.drawImage(img, W/2 - targetW/2, 160, targetW, targetH);
         } else {
             // Fallback
             ctx.font = '10px "Press Start 2P"';
