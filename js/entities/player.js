@@ -26,7 +26,7 @@ class Player {
             guided: { unlocked: false, level: 0 },
             bomb: { unlocked: false, level: 0 }
         };
-        this.selectedWeapon = 'basic'; // Start with basic selected
+        this.selectedWeapons = ['fire']; // Start with something if unlocked, but default is empty array for specials
 
         // Garra mode
         this.garraCharge = 0;
@@ -67,7 +67,7 @@ class Player {
             guided: { unlocked: false, level: 0 },
             bomb: { unlocked: false, level: 0 }
         };
-        this.selectedWeapon = 'basic';
+        this.selectedWeapons = [];
     }
 
     update(dt) {
@@ -138,9 +138,8 @@ class Player {
             this._fireWeapon(def, levelData, isGarra);
         }
 
-        // 2. Fire Selected Weapon (if unlocked and not basic)
-        const selKey = this.selectedWeapon;
-        if (selKey !== 'basic') {
+        // 2. Fire All Selected Weapons (if unlocked)
+        for (const selKey of this.selectedWeapons) {
             const selW = this.weapons[selKey];
             if (selW && selW.unlocked) {
                 const def = WEAPON_TYPES[selKey];
@@ -234,8 +233,26 @@ class Player {
             return;
         }
 
+        if (type === 'basic') {
+            // Basic is always on, clicking it could clear others or just do nothing
+            // For now, let's say it makes you use ONLY basic
+            this.selectedWeapons = [];
+            Audio.menuSelect();
+            return;
+        }
+
         if (this.weapons[type] && this.weapons[type].unlocked) {
-            this.selectedWeapon = type;
+            const idx = this.selectedWeapons.indexOf(type);
+            if (idx !== -1) {
+                // Deselect
+                this.selectedWeapons.splice(idx, 1);
+            } else {
+                // Select (limit 2)
+                if (this.selectedWeapons.length >= 2) {
+                    this.selectedWeapons.shift(); // Remove oldest
+                }
+                this.selectedWeapons.push(type);
+            }
             Audio.menuSelect();
         }
     }

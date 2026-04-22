@@ -122,7 +122,7 @@ const HUD = (() => {
             } else {
                 const w = player.weapons[type];
                 const unlocked = w && w.unlocked;
-                const active = player.selectedWeapon === type;
+                const active = player.selectedWeapons.includes(type);
                 
                 btn.classList.toggle('locked', !unlocked);
                 btn.classList.toggle('active', active);

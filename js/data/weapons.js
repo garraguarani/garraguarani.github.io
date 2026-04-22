@@ -72,7 +72,7 @@ const WEAPON_TYPES = {
     },
     bomb: {
         name: 'Pelota Bomba',
-        emoji: '🥧',
+        emoji: '🧨',
         powerup: 'sopa',
         category: 'selectable',
         color: '#FF3366',
@@ -89,7 +89,7 @@ const WEAPON_TYPES = {
     },
     megagol: {
         name: 'Mega Gol',
-        emoji: '🍜',
+        emoji: '💣',
         powerup: 'vorivori',
         category: 'special',
         color: '#FFD700',
