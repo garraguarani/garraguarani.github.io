@@ -7,7 +7,6 @@
 const HUD = (() => {
     let healthFill = null;
     let scoreEl = null;
-    let megaEl = null;
     let garraFill = null;
     let btnGarra = null;
     let hudEl = null;
@@ -17,7 +16,6 @@ const HUD = (() => {
         hudEl = document.getElementById('hud');
         healthFill = document.getElementById('hud-health-fill');
         scoreEl = document.getElementById('hud-score');
-        megaEl = document.getElementById('hud-mega');
         garraFill = document.getElementById('hud-garra-fill');
         btnGarra = document.getElementById('btn-garra');
 
@@ -100,7 +98,6 @@ const HUD = (() => {
 
         // Score & Meta
         if (scoreEl) scoreEl.textContent = `₲${player.score.toLocaleString()}`;
-        if (megaEl) megaEl.textContent = `🏆×${player.megaGols}`;
 
         // Garra bar
         if (garraFill) {

@@ -29,7 +29,7 @@
                     </div>
                 </div>
                 <div class="hud-score" id="hud-score">₲0</div>
-                <div class="hud-mega" id="hud-mega" style="margin-right:auto;">🏆×0</div>
+                <div style="margin-right:auto;"></div>
                 <button id="btn-pause" class="hud-btn" style="width:30px;height:30px;border-radius:5px;padding:0;" aria-label="Pausa">⏸</button>
                 <button id="btn-restart" class="hud-btn" style="width:30px;height:30px;border-radius:5px;padding:0;margin-left:4px;" aria-label="Reiniciar">🔄</button>
             </div>
@@ -53,35 +53,48 @@
         <div id="ad-container" class="ad-container hidden">
             <div class="ad-placeholder"><span>— PUBLICIDAD —</span></div>
         </div>
+
+        <!-- Pause Menu Overlay -->
+        <div id="pause-modal" class="modal hidden">
+            <div class="modal-content pause-content">
+                <h2 class="title-primary" style="font-size: 24px; margin-bottom: 30px; letter-spacing: 2px;">PAUSA</h2>
+                <div class="menu-buttons">
+                    <button id="pause-btn-resume" class="btn-primary">JUGAR</button>
+                    <button id="pause-btn-controls" class="btn-secondary">CONTROLES</button>
+                    <button id="pause-btn-mute" class="btn-secondary">SONIDO: ON</button>
+                    <button id="pause-btn-home" class="btn-danger">INICIO</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- v=19: optimización sonora anti-aturdimiento (throttling & pitch) -->
-    <script src="js/config.js?v=19"></script>
-    <script src="js/input.js?v=19"></script>
-    <script src="js/systems/pool.js?v=19"></script>
-    <script src="js/systems/background.js?v=19"></script>
-    <script src="js/systems/audio.js?v=19"></script>
-    <script src="js/systems/weather.js?v=19"></script>
-    <script src="js/systems/particle.js?v=19"></script>
-    <script src="js/systems/collision.js?v=19"></script>
-    <script src="js/systems/spawner.js?v=19"></script>
-    <script src="js/data/weapons.js?v=19"></script>
-    <script src="js/data/enemies.js?v=19"></script>
-    <script src="js/data/powerups.js?v=19"></script>
-    <script src="js/data/levels.js?v=19"></script>
-    <script src="js/entities/bullet.js?v=19"></script>
-    <script src="js/entities/enemy.js?v=19"></script>
-    <script src="js/entities/boss.js?v=19"></script>
-    <script src="js/entities/powerup.js?v=19"></script>
-    <script src="js/entities/player.js?v=19"></script>
-    <script src="js/renderer.js?v=19"></script>
-    <script src="js/screens/menu.js?v=19"></script>
-    <script src="js/screens/shop.js?v=19"></script>
-    <script src="js/screens/levelSelect.js?v=20"></script>
-    <script src="js/screens/controls.js?v=19"></script>
-    <script src="js/screens/gameOver.js?v=19"></script>
-    <script src="js/screens/victory.js?v=19"></script>
-    <script src="js/screens/hud.js?v=19"></script>
-    <script src="js/main.js?v=19"></script>
+    <!-- v=21: Menú de Pausa táctico, Mute, Inicio y corrección IA -->
+    <script src="js/config.js?v=21"></script>
+    <script src="js/input.js?v=21"></script>
+    <script src="js/systems/pool.js?v=21"></script>
+    <script src="js/systems/background.js?v=21"></script>
+    <script src="js/systems/audio.js?v=21"></script>
+    <script src="js/systems/weather.js?v=21"></script>
+    <script src="js/systems/particle.js?v=21"></script>
+    <script src="js/systems/collision.js?v=21"></script>
+    <script src="js/systems/spawner.js?v=21"></script>
+    <script src="js/data/weapons.js?v=21"></script>
+    <script src="js/data/enemies.js?v=21"></script>
+    <script src="js/data/powerups.js?v=21"></script>
+    <script src="js/data/levels.js?v=21"></script>
+    <script src="js/entities/bullet.js?v=21"></script>
+    <script src="js/entities/enemy.js?v=21"></script>
+    <script src="js/entities/boss.js?v=21"></script>
+    <script src="js/entities/powerup.js?v=21"></script>
+    <script src="js/entities/player.js?v=21"></script>
+    <script src="js/renderer.js?v=21"></script>
+    <script src="js/screens/menu.js?v=21"></script>
+    <script src="js/screens/shop.js?v=21"></script>
+    <script src="js/screens/levelSelect.js?v=21"></script>
+    <script src="js/screens/controls.js?v=21"></script>
+    <script src="js/screens/gameOver.js?v=21"></script>
+    <script src="js/screens/victory.js?v=21"></script>
+    <script src="js/screens/hud.js?v=21"></script>
+    <script src="js/main.js?v=21"></script>
 </body>
 </html>

@@ -12,8 +12,8 @@ const ShopScreen = (() => {
         { id: 'unlock_fire', name: 'Pelota Fuego', price: 2000, emoji: '🔥', type: 'unlock', weapon: 'fire' },
         { id: 'unlock_triple', name: 'Triple Pelota', price: 3000, emoji: '🫓', type: 'unlock', weapon: 'triple' },
         { id: 'unlock_guided', name: 'Pelota Guiada', price: 5000, emoji: '🧉', type: 'unlock', weapon: 'guided' },
-        { id: 'unlock_bomb', name: 'Pelota Bomba', price: 7000, emoji: '🥧', type: 'unlock', weapon: 'bomb' },
-        { id: 'megagol', name: 'Mega Gol x1', price: 10000, emoji: '🍜', type: 'megagol' },
+        { id: 'unlock_bomb', name: 'Pelota Bomba', price: 7000, emoji: '🧨', type: 'unlock', weapon: 'bomb' },
+        { id: 'megagol', name: 'Mega Gol x1', price: 10000, emoji: '💣', type: 'megagol' },
         { id: 'heal', name: 'Restaurar Vida', price: 600, emoji: '❤', type: 'heal' },
         { id: 'shield', name: 'Escudo Extra', price: 3000, emoji: '🛡', type: 'shield' },
     ];

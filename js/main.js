@@ -42,6 +42,7 @@ const Game = (() => {
             Background.init();
             Particles.init();
             HUD.init();
+        _initPauseMenu();
 
             // Create player
             player = new Player();
@@ -576,18 +577,66 @@ const Game = (() => {
         } catch (e) {}
     }
 
+    function _initPauseMenu() {
+        const modal = document.getElementById('pause-modal');
+        const btnResume = document.getElementById('pause-btn-resume');
+        const btnControls = document.getElementById('pause-btn-controls');
+        const btnMute = document.getElementById('pause-btn-mute');
+        const btnHome = document.getElementById('pause-btn-home');
+
+        if (btnResume) btnResume.onclick = () => togglePause();
+        if (btnControls) {
+            btnControls.onclick = () => {
+                modal.classList.add('hidden');
+                state = 'controls';
+                ControlsScreen.init();
+                Audio.menuSelect();
+            };
+        }
+        if (btnMute) {
+            let isMuted = localStorage.getItem('garra_muted') === 'true';
+            const updateBtn = () => {
+                btnMute.textContent = isMuted ? 'SONIDO: OFF' : 'SONIDO: ON';
+                Audio.setEnabled(!isMuted);
+            };
+            updateBtn();
+
+            btnMute.onclick = () => {
+                isMuted = !isMuted;
+                localStorage.setItem('garra_muted', isMuted);
+                updateBtn();
+                Audio.menuSelect();
+            };
+        }
+        if (btnHome) {
+            btnHome.onclick = () => {
+                modal.classList.add('hidden');
+                state = CONFIG.STATES.MENU;
+                player.fullReset();
+                Audio.setAmbientVolume(0);
+                Weather.setType('none');
+                Audio.menuSelect();
+            };
+        }
+    }
+
     function togglePause() {
+        const modal = document.getElementById('pause-modal');
         if (state === CONFIG.STATES.PLAYING) {
             state = 'paused';
+            if (modal) modal.classList.remove('hidden');
             Audio.menuSelect();
-        } else if (state === 'paused') {
+        } else if (state === 'paused' || (state === 'controls' && modal.classList.contains('hidden'))) {
             state = CONFIG.STATES.PLAYING;
+            if (modal) modal.classList.add('hidden');
             Audio.menuSelect();
         }
     }
 
     function restartCurrentLevel() {
         if (state === CONFIG.STATES.PLAYING || state === 'paused') {
+            const modal = document.getElementById('pause-modal');
+            if (modal) modal.classList.add('hidden');
             _startLevel(levelIndex);
         }
     }
