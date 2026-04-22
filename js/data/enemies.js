@@ -7,7 +7,7 @@ const ENEMY_TYPES = {
     // --- Basic ---
     runner: {
         name: 'Corredor',
-        health: 6,         // 6 shots at L1 (Challenging start)
+        health: 4,         // Revised v28 (Easier progression)
         speed: 120,
         shootRate: 1.4,
         reward: 100,
@@ -19,7 +19,7 @@ const ENEMY_TYPES = {
     },
     dribbler: {
         name: 'Driblador',
-        health: 6,         
+        health: 4,         // Revised v28
         speed: 100,
         shootRate: 0,
         reward: 150,
@@ -30,7 +30,7 @@ const ENEMY_TYPES = {
     },
     lateral: {
         name: 'Lateral',
-        health: 6,         
+        health: 4,         // Revised v28
         speed: 140,
         shootRate: 1.8,
         reward: 120,

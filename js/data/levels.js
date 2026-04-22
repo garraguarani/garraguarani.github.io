@@ -128,16 +128,16 @@ function _generateKnockoutWaves(waveCount, difficultyMult) {
         const enemies = [];
 
         for (let e = 0; e < enemyCount; e++) {
-            // v25: Progresión de tipos más agresiva
-            // w es el índice de la oleada (0 a ~20)
-            const baseTypeIdx = Math.floor(w * 0.6); // Escala más rápido
+            // v28: Progresión de tipos según oleada Y dificultad del nivel
+            // Esto asegura que en niveles altos (4-8) aparezcan enemigos avanzados antes
+            const levelBonus = Math.floor((difficultyMult - 1.4) * 5); // Level 4 adds ~0, Level 8 adds ~5
+            const baseTypeIdx = Math.floor(w * 0.6) + levelBonus;
             const maxType = Math.min(types.length - 1, baseTypeIdx + 2 + Math.floor(Math.random() * 3));
             
-            // Permitir mayor variabilidad pero asegurar que los tipos avanzados aparezcan
             let typeIdx = Math.floor(Math.random() * (maxType + 1));
             
-            // Pequeño boost de probabilidad para Hincha (8) y Árbitro (9) en oleadas finales
-            if (maxType >= 8 && Math.random() < 0.15) {
+            // v28: Boost de probabilidad para Hincha (8) y Árbitro (9) aumentado al 25%
+            if (maxType >= 8 && Math.random() < 0.25) {
                 typeIdx = Math.random() > 0.5 ? 8 : 9;
             }
 
