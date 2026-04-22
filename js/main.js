@@ -275,8 +275,13 @@ const Game = (() => {
                 // Check if we should show a Fact screen (v27: Fixed logic & nesting)
                 // We show after L2 (idx 1->2), L4 (idx 3->4), L6 (idx 5->6), L8 is victory
                 if (levelIndex % 2 === 0) {
-                    state = CONFIG.STATES.FACTS;
-                    FactsScreen.init(levelIndex - 1); // Pass the level we just finished
+                    if (typeof FactsScreen === 'undefined' || !FactsScreen) {
+                        console.warn('FactsScreen is missing. Fallback to Level Select.');
+                        state = CONFIG.STATES.LEVEL_SELECT;
+                    } else {
+                        state = CONFIG.STATES.FACTS;
+                        FactsScreen.init(levelIndex - 1); // Pass the level we just finished
+                    }
                 } else {
                     state = CONFIG.STATES.LEVEL_SELECT;
                 }
