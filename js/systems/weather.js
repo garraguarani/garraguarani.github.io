@@ -9,6 +9,10 @@ const Weather = (() => {
     let flashAlpha = 0;
     const MAX_PARTICLES = 100;
 
+    function init() {
+        // Lazy init - nothing to load
+    }
+
     function setType(type) {
         currentType = type;
         particles = [];
@@ -103,5 +107,5 @@ const Weather = (() => {
         }
     }
 
-    return { setType, update, draw };
+    return { init, setType, update, draw };
 })();
