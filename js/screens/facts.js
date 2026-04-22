@@ -32,15 +32,16 @@ const FactsScreen = (() => {
 
     function update(dt, input) {
         let action = null;
-        buttons.forEach(btn => {
-            if (input.isPointerDown()) {
-                const p = input.getPointer();
+        
+        if (input.isTapActive()) {
+            const p = input.getTapPosition();
+            buttons.forEach(btn => {
                 if (p.x > btn.x - btn.w/2 && p.x < btn.x + btn.w/2 &&
                     p.y > btn.y - btn.h/2 && p.y < btn.y + btn.h/2) {
                     action = btn.action;
                 }
-            }
-        });
+            });
+        }
 
         // Keyboard shortcuts
         if (input.isKeyDown('Enter') || input.isKeyDown(' ')) {
@@ -72,7 +73,8 @@ const FactsScreen = (() => {
             const targetW = W - padding * 2;
             const targetH = (targetW / img.width) * img.height;
             
-            ctx.drawImage(img, W/2 - targetW/2, 100, targetW, targetH);
+            // v29: Ligeramente más abajo (135) para mejor composición
+            ctx.drawImage(img, W/2 - targetW/2, 135, targetW, targetH);
         } else {
             // Fallback
             ctx.font = '10px "Press Start 2P"';
