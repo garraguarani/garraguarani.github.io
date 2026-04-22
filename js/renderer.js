@@ -50,7 +50,8 @@ const Renderer = (() => {
             arbitro:    'assets/images/arbitro.png',
             hincha:     'assets/images/hincha.png',
             hincha2:    'assets/images/hincha-2.png',
-            trophy:     'assets/images/ui/trophy.png'
+            trophy:     'assets/images/ui/trophy.png',
+            campeones:  'assets/images/ui/campeones.png'
         };
 
         const loaders = Object.entries(assetList).map(([name, url]) => {

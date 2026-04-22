@@ -486,6 +486,19 @@ const Game = (() => {
         }
     }
 
+    function onBossDamageDrop(x, y) {
+        // Limited drops: only health and money
+        const pool = ['heal', 'money'];
+        const type = pool[Math.floor(Math.random() * pool.length)];
+
+        const pu = powerups.get();
+        if (pu) {
+            pu.init(x, y, type);
+            // Visual feedback
+            Particles.explode(x, y, 8, CONFIG.COLORS.PY_GOLD, 60, 2);
+        }
+    }
+
     function onBossKilled(boss) {
         Particles.bossExplode(boss.x, boss.y);
         Audio.victory();

@@ -58,6 +58,7 @@ class Boss {
         this.flashTimer = 0;
         this.entering = true;
         this.targetY = 80;
+        this.lastDropHealth = 1.0; // Health percent for the next drop threshold
     }
 
     update(dt) {
@@ -263,6 +264,18 @@ class Boss {
     takeDamage(amount) {
         this.health -= amount;
         this.flashTimer = 0.08;
+
+        // Boss Drops Logic: every 20% lost
+        const healthPercent = this.health / this.maxHealth;
+        // Check if we passed a 20% threshold (0.8, 0.6, 0.4, 0.2)
+        const threshold = this.lastDropHealth - 0.2;
+        if (healthPercent <= threshold && threshold > 0.01) {
+            this.lastDropHealth = threshold;
+            if (window.Game && window.Game.onBossDamageDrop) {
+                window.Game.onBossDamageDrop(this.x, this.y);
+            }
+        }
+
         if (this.health <= 0) {
             this.health = 0;
             this.alive = false;

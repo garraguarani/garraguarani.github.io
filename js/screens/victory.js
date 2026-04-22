@@ -124,46 +124,63 @@ const VictoryScreen = (() => {
     }
 
     function _drawFinalVictory(ctx, W, H, player) {
-        // Epic final screen
+        // Epic final screen background effects
         const pulse = Math.sin(time * 3) * 0.2 + 0.8;
+        const img = Renderer.getImage('campeones');
 
-        ctx.font = '14px "Press Start 2P"';
+        // Header
         ctx.textAlign = 'center';
-        ctx.fillStyle = `rgba(255, 215, 0, ${pulse})`;
-        ctx.fillText('¡CAMPEON!', W/2, 100);
+        ctx.font = '18px "Press Start 2P"';
+        ctx.fillStyle = CONFIG.COLORS.PY_GOLD;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = 'rgba(255, 215, 0, 0.5)';
+        ctx.fillText('¡CAMPEONES!', W/2, 60);
+        ctx.shadowBlur = 0;
 
         ctx.font = '10px "Press Start 2P"';
         ctx.fillStyle = CONFIG.COLORS.PY_WHITE;
-        ctx.fillText('¡PARAGUAY ES', W/2, 150);
+        ctx.fillText('PARAGUAY ES EL NUEVO', W/2, 95);
         ctx.fillStyle = CONFIG.COLORS.PY_GOLD;
-        ctx.fillText('CAMPEON DEL MUNDO!', W/2, 175);
+        ctx.fillText('DUEÑO DEL MUNDO', W/2, 115);
 
-        // Big flag
-        ctx.font = '60px serif';
-        ctx.fillText('🇵🇾', W/2, 260);
+        // Main Illustration (campeones.png)
+        if (img) {
+            const imgW = W - 40;
+            const imgH = (imgW / img.width) * img.height;
+            ctx.save();
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = 'rgba(255, 215, 0, 0.3)';
+            ctx.drawImage(img, W/2 - imgW/2, 150, imgW, imgH);
+            ctx.restore();
+        } else {
+            // Fallback flag
+            ctx.font = '80px serif';
+            ctx.fillText('🇵🇾', W/2, 240);
+        }
 
-        // Trophy
-        ctx.font = '50px serif';
-        ctx.fillText('🏆', W/2, 340);
-
-        // Stars
-        for (let i = 0; i < 5; i++) {
-            const sx = 80 + i * 55;
-            const sy = 380 + Math.sin(time * 2 + i) * 5;
-            ctx.font = '16px serif';
-            ctx.globalAlpha = 0.5 + Math.sin(time * 3 + i * 1.2) * 0.3;
+        // Stars floating around
+        for (let i = 0; i < 8; i++) {
+            const angle = (time * 0.5) + (i * Math.PI / 4);
+            const r = 140 + Math.sin(time + i) * 10;
+            const sx = W/2 + Math.cos(angle) * r;
+            const sy = 280 + Math.sin(angle) * r;
+            ctx.font = '12px serif';
+            ctx.globalAlpha = 0.4 + Math.sin(time * 2 + i) * 0.4;
             ctx.fillText('⭐', sx, sy);
         }
         ctx.globalAlpha = 1;
 
-        // Score
-        ctx.font = '9px "Press Start 2P"';
+        // Stats Footer
+        ctx.font = '10px "Press Start 2P"';
         ctx.fillStyle = CONFIG.COLORS.PY_GOLD;
-        ctx.fillText(`Score final: ₲${player.score.toLocaleString()}`, W/2, 430);
+        ctx.fillText(`PUNTUACIÓN: ₲${player.score.toLocaleString()}`, W/2, 420);
+        
+        ctx.font = '40px serif';
+        ctx.fillText('🏆', W/2, 470);
 
         ctx.font = '7px "Press Start 2P"';
-        ctx.fillStyle = 'rgba(255,255,255,0.5)';
-        ctx.fillText('¡Compartí tu logro con el mundo!', W/2, 470);
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.fillText('¡COMPARTÍ ESTE LOGRO HISTÓRICO!', W/2, H - 150);
 
         if (time >= 2) {
             // Menu button
