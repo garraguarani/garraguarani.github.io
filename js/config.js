@@ -60,7 +60,8 @@ const CONFIG = {
         SHOP: 'shop',
         GAME_OVER: 'game_over',
         VICTORY: 'victory',
-        BOSS_INTRO: 'boss_intro'
+        BOSS_INTRO: 'boss_intro',
+        COMING_SOON: 'coming_soon'
     },
 
     // Colors

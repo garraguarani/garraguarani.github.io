@@ -124,15 +124,7 @@ html, body {
     font-size: 8px;
     color: var(--py-gold);
     text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
-    flex: 1;
-    text-align: center;
-}
-
-.hud-mega {
-    font-size: 8px;
-    text-align: right;
-    flex: 0.5;
-    text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
+    margin-right: 4px;
 }
 
 .hud-bottom {

@@ -66,14 +66,14 @@ const ControlsScreen = (() => {
         ctx.fillText('🔥 Disparo: ¡Automático!', 20, y);
         
         y += spacing;
-        ctx.fillText('💣 Cambiar Arma: Botón o [Q]', 20, y);
+        ctx.fillText('⚽ Cambiar Arma: Botón o [Q]', 20, y);
 
         y += spacing;
-        ctx.fillText('🏆 Mega Gol: Botón o [R]', 20, y);
+        ctx.fillText('💣 Mega Gol: Botón o [R]', 20, y);
 
         y += spacing;
         ctx.fillStyle = CONFIG.COLORS.PY_RED;
-        ctx.fillText('⭐ MODO GARRA: Botón o [E]', 20, y);
+        ctx.fillText('⚡ MODO GARRA: Botón o [E]', 20, y);
         ctx.fillStyle = '#AAAAAA';
         ctx.font = '8px "Press Start 2P"';
         ctx.fillText('    (¡Invencibilidad y daño triple!)', 20, y + 15);

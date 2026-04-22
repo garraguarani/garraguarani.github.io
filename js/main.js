@@ -141,6 +141,9 @@ const Game = (() => {
             case 'controls':
                 _updateControls(dt);
                 break;
+            case CONFIG.STATES.COMING_SOON:
+                _updateComingSoon(dt);
+                break;
             case 'paused':
                 // Do not update game logic when paused
                 _updatePaused(dt);
@@ -152,6 +155,10 @@ const Game = (() => {
         const result = MenuScreen.update(dt);
         if (result === 'play') {
             state = CONFIG.STATES.LEVEL_SELECT;
+            Audio.menuSelect();
+        } else if (result === 'campeonato') {
+            state = CONFIG.STATES.COMING_SOON;
+            ComingSoonScreen.init();
             Audio.menuSelect();
         } else if (result === 'controls') {
             state = 'controls';
@@ -174,6 +181,13 @@ const Game = (() => {
             Audio.menuSelect();
         } else if (result !== null && result >= 0) {
             _startLevel(result);
+        }
+    }
+
+    function _updateComingSoon(dt) {
+        const result = ComingSoonScreen.update(dt);
+        if (result === -1) {
+            state = CONFIG.STATES.MENU;
         }
     }
 
@@ -322,6 +336,9 @@ const Game = (() => {
                 break;
             case 'controls':
                 ControlsScreen.draw(ctx);
+                break;
+            case CONFIG.STATES.COMING_SOON:
+                ComingSoonScreen.draw(ctx);
                 break;
             case 'paused':
                 _renderPlaying(ctx);

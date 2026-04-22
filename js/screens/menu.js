@@ -7,17 +7,17 @@ const MenuScreen = (() => {
     let time = 0;
     let selectedOption = 0;
     let inputCooldown = 0;
-    const OPTIONS = ['JUGAR', 'CONTROLES', 'SONIDO: ON'];
+    const OPTIONS = ['JUGAR EL MUNDIAL 🏆', 'CAMPEONATO PYO 🇵🇾', 'CONTROLES 🎮', 'SONIDO 🔊'];
     let soundOn = true;
     let audioContextStarted = false;
 
     // Layout: canvas 360x640
     // Zona superior (título + imagen): y=0..340
     // Zona inferior (botones + footer): y=350..640
-    const BTN_START_Y = 370;
-    const BTN_SPACING = 58;
-    const BTN_W = 240;
-    const BTN_H = 48;
+    const BTN_START_Y = 345;
+    const BTN_SPACING = 52;
+    const BTN_W = 280;
+    const BTN_H = 42;
 
     function update(dt) {
         if (!audioContextStarted) {
@@ -45,8 +45,9 @@ const MenuScreen = (() => {
                 if (pos.x > W/2 - BTN_W/2 && pos.x < W/2 + BTN_W/2 &&
                     pos.y > btnY - BTN_H/2 && pos.y < btnY + BTN_H/2) {
                     if (i === 0) { Audio.menuSelect(); return 'play'; }
-                    if (i === 1) { Audio.menuSelect(); return 'controls'; }
-                    if (i === 2 && inputCooldown <= 0) { _toggleSound(); inputCooldown = 0.3; }
+                    if (i === 1) { Audio.menuSelect(); return 'campeonato'; }
+                    if (i === 2) { Audio.menuSelect(); return 'controls'; }
+                    if (i === 3 && inputCooldown <= 0) { _toggleSound(); inputCooldown = 0.3; }
                 }
             }
         }
@@ -54,8 +55,9 @@ const MenuScreen = (() => {
         if (inputCooldown <= 0 && (Input.isKeyDown('Enter') || Input.isKeyDown('Space'))) {
             inputCooldown = 0.3;
             if (selectedOption === 0) { Audio.menuSelect(); return 'play'; }
-            if (selectedOption === 1) { Audio.menuSelect(); return 'controls'; }
-            if (selectedOption === 2) _toggleSound();
+            if (selectedOption === 1) { Audio.menuSelect(); return 'campeonato'; }
+            if (selectedOption === 2) { Audio.menuSelect(); return 'controls'; }
+            if (selectedOption === 3) _toggleSound();
         }
 
         return null;
@@ -64,7 +66,7 @@ const MenuScreen = (() => {
     function _toggleSound() {
         soundOn = !soundOn;
         Audio.setEnabled(soundOn);
-        OPTIONS[2] = `SONIDO: ${soundOn ? 'ON' : 'OFF'}`;
+        OPTIONS[3] = `SONIDO ${soundOn ? '🔊' : '🔇'}`;
         if (soundOn) Audio.menuSelect();
     }
 
