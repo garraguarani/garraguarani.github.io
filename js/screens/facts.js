@@ -99,7 +99,7 @@ const FactsScreen = (() => {
             const targetH = (targetW / img.width) * img.height;
             
             // v30: Layout ajustado para el logo
-            ctx.drawImage(img, W/2 - targetW/2, 160, targetW, targetH);
+            ctx.drawImage(img, W/2 - targetW/2, 130, targetW, targetH);
         } else {
             // Fallback
             ctx.font = '10px "Press Start 2P"';
