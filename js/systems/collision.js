@@ -94,7 +94,7 @@ const Collision = (() => {
                 if (!b.active) continue;
 
                 if (circles(
-                    b.x, b.y, 3,
+                    b.x, b.y, 4,
                     player.x, player.y, CONFIG.PLAYER_HITBOX_RADIUS
                 )) {
                     b.active = false;
