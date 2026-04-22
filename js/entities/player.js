@@ -26,7 +26,7 @@ class Player {
             guided: { unlocked: false, level: 0 },
             bomb: { unlocked: false, level: 0 }
         };
-        this.selectedWeapon = 'guided'; // current selectable
+        this.selectedWeapon = 'basic'; // Start with basic selected
 
         // Garra mode
         this.garraCharge = 0;
@@ -67,7 +67,7 @@ class Player {
             guided: { unlocked: false, level: 0 },
             bomb: { unlocked: false, level: 0 }
         };
-        this.selectedWeapon = 'guided';
+        this.selectedWeapon = 'basic';
     }
 
     update(dt) {
@@ -130,23 +130,23 @@ class Player {
 
         const isGarra = this.garraActive;
 
-        // Fire all unlocked "always active" weapons
-        const alwaysWeapons = ['basic', 'fire', 'triple'];
-        for (const wKey of alwaysWeapons) {
-            const w = this.weapons[wKey];
-            if (!w.unlocked) continue;
-            const def = WEAPON_TYPES[wKey];
-            const levelData = def.levels[Math.min(w.level, def.levels.length - 1)];
+        // 1. Always fire Basic (Level 0+)
+        const basicW = this.weapons['basic'];
+        if (basicW.unlocked) {
+            const def = WEAPON_TYPES['basic'];
+            const levelData = def.levels[Math.min(basicW.level, def.levels.length - 1)];
             this._fireWeapon(def, levelData, isGarra);
         }
 
-        // Fire selected weapon
+        // 2. Fire Selected Weapon (if unlocked and not basic)
         const selKey = this.selectedWeapon;
-        const selW = this.weapons[selKey];
-        if (selW && selW.unlocked) {
-            const def = WEAPON_TYPES[selKey];
-            const levelData = def.levels[Math.min(selW.level, def.levels.length - 1)];
-            this._fireWeapon(def, levelData, isGarra);
+        if (selKey !== 'basic') {
+            const selW = this.weapons[selKey];
+            if (selW && selW.unlocked) {
+                const def = WEAPON_TYPES[selKey];
+                const levelData = def.levels[Math.min(selW.level, def.levels.length - 1)];
+                this._fireWeapon(def, levelData, isGarra);
+            }
         }
 
         Audio.shoot();
@@ -228,10 +228,22 @@ class Player {
         return true;
     }
 
+    selectWeapon(type) {
+        if (type === 'megagol') {
+            this.useMegaGol();
+            return;
+        }
+
+        if (this.weapons[type] && this.weapons[type].unlocked) {
+            this.selectedWeapon = type;
+            Audio.menuSelect();
+        }
+    }
+
     cycleSelectableWeapon() {
-        const selectables = ['guided', 'bomb'];
-        const unlocked = selectables.filter(k => this.weapons[k].unlocked);
-        if (unlocked.length === 0) return;
+        // Obsolete but kept for safety if called elsewhere
+        const s = ['basic', 'fire', 'triple', 'guided', 'bomb'];
+        const unlocked = s.filter(k => this.weapons[k].unlocked);
         const idx = unlocked.indexOf(this.selectedWeapon);
         this.selectedWeapon = unlocked[(idx + 1) % unlocked.length];
         Audio.menuSelect();

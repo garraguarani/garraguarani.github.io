@@ -140,13 +140,84 @@ html, body {
     bottom: 0;
     left: 0;
     right: 0;
-    height: var(--hud-height-bottom);
+    height: 60px; /* Un poco más alto para los iconos */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 4px 8px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+    z-index: 11;
+}
+
+.hud-weapon-selector {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.w-btn {
+    pointer-events: all;
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 4px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 14px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 4px 8px;
-    background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
-    z-index: 11;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-family: inherit;
+    position: relative;
+    overflow: visible;
+}
+
+.w-btn:active {
+    transform: scale(0.85);
+}
+
+.w-btn.locked {
+    opacity: 0.2;
+    filter: grayscale(1);
+    pointer-events: none;
+}
+
+.w-btn.active {
+    border: 2px solid #00FFEE;
+    background: rgba(0, 255, 238, 0.2);
+    box-shadow: 0 0 8px rgba(0, 255, 238, 0.6);
+    transform: scale(1.1);
+}
+
+.w-btn.mega-glow {
+    animation: mega-glow-pulse 1.5s infinite;
+    border-color: var(--py-gold);
+}
+
+@keyframes mega-glow-pulse {
+    0%, 100% { box-shadow: 0 0 5px var(--py-gold); }
+    50% { box-shadow: 0 0 20px var(--py-gold), 0 0 30px var(--py-gold-dark); }
+}
+
+.hud-garra-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: all;
+}
+
+.hud-garra-bar {
+    flex: 1;
+    height: 10px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 .hud-btn {

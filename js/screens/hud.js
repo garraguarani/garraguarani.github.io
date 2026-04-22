@@ -1,6 +1,7 @@
 /* ============================================
    GARRA GUARANÍ — HUD Controller
    Connects HTML HUD to game state
+   Balanced for v18 (Weapon Selector)
    ============================================ */
 
 const HUD = (() => {
@@ -9,8 +10,8 @@ const HUD = (() => {
     let megaEl = null;
     let garraFill = null;
     let btnGarra = null;
-    let btnWeapon = null;
     let hudEl = null;
+    let weaponBtns = {};
 
     function init() {
         hudEl = document.getElementById('hud');
@@ -19,31 +20,39 @@ const HUD = (() => {
         megaEl = document.getElementById('hud-mega');
         garraFill = document.getElementById('hud-garra-fill');
         btnGarra = document.getElementById('btn-garra');
-        btnWeapon = document.getElementById('btn-weapon');
 
-        let btnPause = document.getElementById('btn-pause');
-        let btnRestart = document.getElementById('btn-restart');
+        const btnPause = document.getElementById('btn-pause');
+        const btnRestart = document.getElementById('btn-restart');
 
-        // Button events
+        // Weapon buttons initialization
+        const wTypes = ['basic', 'fire', 'triple', 'guided', 'bomb', 'megagol'];
+        wTypes.forEach(type => {
+            const btn = document.getElementById(`wbtn-${type}`);
+            if (btn) {
+                weaponBtns[type] = btn;
+                const select = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (window.Game && window.Game.player) {
+                        window.Game.player.selectWeapon(type);
+                    }
+                };
+                btn.addEventListener('touchstart', select);
+                btn.addEventListener('click', select);
+            }
+        });
+
+        // Other buttons
         if (btnGarra) {
-            btnGarra.addEventListener('touchstart', (e) => {
+            const actGarra = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (window.Game && window.Game.player) {
                     window.Game.player.activateGarra();
                 }
-            });
-        }
-
-        if (btnWeapon) {
-            btnWeapon.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (window.Game && window.Game.player) {
-                    window.Game.player.cycleSelectableWeapon();
-                    _updateWeaponBtn(window.Game.player);
-                }
-            });
+            };
+            btnGarra.addEventListener('touchstart', actGarra);
+            btnGarra.addEventListener('click', actGarra);
         }
 
         if (btnPause) {
@@ -86,22 +95,12 @@ const HUD = (() => {
         if (healthFill) {
             const pct = Math.max(0, player.health / player.maxHealth * 100);
             healthFill.style.width = pct + '%';
-            if (pct < 30) {
-                healthFill.style.background = '#FF0000';
-            } else {
-                healthFill.style.background = '';
-            }
+            healthFill.style.background = pct < 30 ? '#FF0000' : '';
         }
 
-        // Score
-        if (scoreEl) {
-            scoreEl.textContent = `₲${player.score.toLocaleString()}`;
-        }
-
-        // Mega Gols
-        if (megaEl) {
-            megaEl.textContent = `🏆×${player.megaGols}`;
-        }
+        // Score & Meta
+        if (scoreEl) scoreEl.textContent = `₲${player.score.toLocaleString()}`;
+        if (megaEl) megaEl.textContent = `🏆×${player.megaGols}`;
 
         // Garra bar
         if (garraFill) {
@@ -109,20 +108,26 @@ const HUD = (() => {
             garraFill.style.width = pct + '%';
         }
 
-        // Garra button enabled
         if (btnGarra) {
             btnGarra.disabled = player.garraCharge < CONFIG.GARRA_MAX_CHARGE || player.garraActive;
         }
 
-        // Weapon button
-        _updateWeaponBtn(player);
-    }
-
-    function _updateWeaponBtn(player) {
-        if (!btnWeapon) return;
-        const selW = WEAPON_TYPES[player.selectedWeapon];
-        if (selW) {
-            btnWeapon.textContent = selW.emoji;
+        // --- Weapon Selector Update ---
+        for (const [type, btn] of Object.entries(weaponBtns)) {
+            if (type === 'megagol') {
+                const hasMega = player.megaGols > 0;
+                btn.classList.toggle('locked', !hasMega);
+                btn.classList.toggle('mega-glow', hasMega);
+                btn.disabled = !hasMega;
+            } else {
+                const w = player.weapons[type];
+                const unlocked = w && w.unlocked;
+                const active = player.selectedWeapon === type;
+                
+                btn.classList.toggle('locked', !unlocked);
+                btn.classList.toggle('active', active);
+                btn.disabled = !unlocked;
+            }
         }
     }
 
