@@ -271,12 +271,12 @@ const Game = (() => {
                 Audio.victory();
                 Audio.setAmbientVolume(0);
                 Weather.setType('none');
-                // Check if we should show a Fact screen (v26: interleaved every 2 levels)
-                // We show after L2 (idx1), L4 (idx3), L6 (idx5), L8 (idx7)
-                // This happens when levelIndex + 1 is even
-                if ((levelIndex + 1) % 2 === 0) {
+            } else {
+                // Check if we should show a Fact screen (v27: Fixed logic & nesting)
+                // We show after L2 (idx 1->2), L4 (idx 3->4), L6 (idx 5->6), L8 is victory
+                if (levelIndex % 2 === 0) {
                     state = CONFIG.STATES.FACTS;
-                    FactsScreen.init(levelIndex);
+                    FactsScreen.init(levelIndex - 1); // Pass the level we just finished
                 } else {
                     state = CONFIG.STATES.LEVEL_SELECT;
                 }
