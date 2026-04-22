@@ -156,11 +156,10 @@ const MenuScreen = (() => {
         }
 
         // ---- FOOTER ----
-        ctx.font = '5px "Press Start 2P"';
-        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        ctx.font = '7px "Press Start 2P"'; // Un poco más grande para legibilidad
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
         ctx.textAlign = 'center';
-        ctx.fillText('⚽ MUNDIAL 2026 — GARRA GUARANÍ ⚽', W/2, H - 16);
-        ctx.fillText('Hecho con ❤️ en Paraguay', W/2, H - 6);
+        ctx.fillText('Hecho con garra en Paraguay', W/2, H - 12);
     }
 
     function _drawButton(ctx, cx, cy, w, h, label, isSelected, t) {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'garra-guarani-v30';
+const CACHE_NAME = 'garra-guarani-v31';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
@@ -19,11 +19,11 @@ const ASSETS_TO_CACHE = [
     '/js/systems/spawner.js',
     '/js/systems/weather.js',
     '/js/systems/particle.js',
-    '/js/screens/menu.js?v=28',
-    '/js/screens/shop.js?v=28',
-    '/js/screens/levelSelect.js?v=28',
-    '/js/screens/comingSoon.js?v=28',
-    '/js/screens/facts.js?v=28',
+    '/js/screens/menu.js?v=31',
+    '/js/screens/shop.js?v=31',
+    '/js/screens/levelSelect.js?v=31',
+    '/js/screens/comingSoon.js?v=31',
+    '/js/screens/facts.js?v=31',
     '/js/screens/gameOver.js',
     '/js/screens/victory.js',
     '/js/screens/hud.js',
