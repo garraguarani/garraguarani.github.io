@@ -6,6 +6,7 @@
 const FactsScreen = (() => {
     let factId = 1;
     let buttons = [];
+    let time = 0;
 
     function init(levelIndex) {
         // levelIndex is 1-based or 0-based? 
@@ -15,16 +16,6 @@ const FactsScreen = (() => {
         if (factId < 1) factId = 1;
         if (factId > 4) factId = 4;
 
-        buttons = [
-            {
-                id: 'continue',
-                text: 'CONTINUAR ▶',
-                x: CONFIG.GAME_WIDTH / 2,
-                y: CONFIG.GAME_HEIGHT - 60,
-                w: 220,
-                h: 45,
-                color: CONFIG.COLORS.PY_RED,
-                textColor: '#FFFFFF',
         const W = CONFIG.GAME_WIDTH;
         const H = CONFIG.GAME_HEIGHT;
 
