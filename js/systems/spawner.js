@@ -159,7 +159,14 @@ const Spawner = (() => {
         const type = ENEMY_TYPES[def.type] || ENEMY_TYPES.runner;
         const teamKey = game.currentTeamKey;
         const team = CONFIG.TEAMS[teamKey];
+        // Dificultad base escala con el nivel y el equipo
         const difficulty = (team ? team.difficulty : 1) * (game.levelIndex * 0.4 + 1);
+
+        // --- BALANCE v25 ---
+        // Limitar la velocidad para que no salgan de pantalla antes de disparar
+        const speedMult = Math.min(1.8, 0.8 + difficulty * 0.15);
+        // Escalar la cadencia de tiro: a mayor dificultad, disparan más seguido
+        const shootRateMult = Math.max(0.4, 1 / (1 + difficulty * 0.25));
 
         // Start position
         let startX, startY;
@@ -181,8 +188,8 @@ const Spawner = (() => {
             y: startY,
             type: def.type,
             health: Math.ceil(type.health * difficulty),
-            speed: type.speed * (0.8 + difficulty * 0.2),
-            shootRate: type.shootRate,
+            speed: type.speed * speedMult,
+            shootRate: type.shootRate * shootRateMult,
             pattern: def.pattern || type.defaultPattern,
             reward: Math.ceil(type.reward * difficulty),
             width: type.width,

@@ -69,8 +69,8 @@ class Enemy {
         if (this.shootRate > 0) {
             this.shootTimer -= dt;
             if (this.shootTimer <= 0) {
-                // Only fire if in middle vertical zone
-                if (this.y > 10 && this.y < CONFIG.GAME_HEIGHT * 0.7) {
+                // Only fire if in middle vertical zone (Extended in v25 for faster enemies)
+                if (this.y > 10 && this.y < CONFIG.GAME_HEIGHT * 0.8) {
                     this._shoot();
                 }
                 // Always reset timer to keep the rhythm, even if we missed the window
