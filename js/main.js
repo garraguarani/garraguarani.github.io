@@ -40,6 +40,7 @@ const Game = (() => {
             Input.init(Renderer.getCanvas());
             Audio.init();
             Background.init();
+            Weather.init();
             Particles.init();
             HUD.init();
         _initPauseMenu();
