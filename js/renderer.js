@@ -51,7 +51,11 @@ const Renderer = (() => {
             hincha:     'assets/images/hincha.png',
             hincha2:    'assets/images/hincha-2.png',
             trophy:     'assets/images/ui/trophy.png',
-            campeones:  'assets/images/ui/campeones.png'
+            campeones:  'assets/images/ui/campeones.png',
+            fact1:      'assets/images/ui/facts/sabias-que1.png',
+            fact2:      'assets/images/ui/facts/sabias-que2.png',
+            fact3:      'assets/images/ui/facts/sabias-que3.png',
+            fact4:      'assets/images/ui/facts/sabias-que4.png'
         };
 
         const loaders = Object.entries(assetList).map(([name, url]) => {

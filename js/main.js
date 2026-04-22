@@ -144,6 +144,9 @@ const Game = (() => {
             case CONFIG.STATES.COMING_SOON:
                 _updateComingSoon(dt);
                 break;
+            case CONFIG.STATES.FACTS:
+                _updateFacts(dt);
+                break;
             case 'paused':
                 // Do not update game logic when paused
                 _updatePaused(dt);
@@ -268,9 +271,24 @@ const Game = (() => {
                 Audio.victory();
                 Audio.setAmbientVolume(0);
                 Weather.setType('none');
-            } else {
-                state = CONFIG.STATES.LEVEL_SELECT;
+                // Check if we should show a Fact screen (v26: interleaved every 2 levels)
+                // We show after L2 (idx1), L4 (idx3), L6 (idx5), L8 (idx7)
+                // This happens when levelIndex + 1 is even
+                if ((levelIndex + 1) % 2 === 0) {
+                    state = CONFIG.STATES.FACTS;
+                    FactsScreen.init(levelIndex);
+                } else {
+                    state = CONFIG.STATES.LEVEL_SELECT;
+                }
             }
+        }
+    }
+
+    function _updateFacts(dt) {
+        const result = FactsScreen.update(dt, Input);
+        if (result === 'next') {
+            state = CONFIG.STATES.LEVEL_SELECT;
+            Audio.menuSelect();
         }
     }
 
@@ -339,6 +357,9 @@ const Game = (() => {
                 break;
             case CONFIG.STATES.COMING_SOON:
                 ComingSoonScreen.draw(ctx);
+                break;
+            case CONFIG.STATES.FACTS:
+                FactsScreen.draw(ctx);
                 break;
             case 'paused':
                 _renderPlaying(ctx);

@@ -61,7 +61,8 @@ const CONFIG = {
         GAME_OVER: 'game_over',
         VICTORY: 'victory',
         BOSS_INTRO: 'boss_intro',
-        COMING_SOON: 'coming_soon'
+        COMING_SOON: 'coming_soon',
+        FACTS: 'facts'
     },
 
     // Colors
