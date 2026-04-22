@@ -12,6 +12,7 @@ const Audio = (() => {
     let bgmTimer = null;
     let isPlayingBgm = false;
     let ambientGain = null;
+    let lastHitTime = 0;  // Para limitar frecuencia de sonidos de impacto
 
     function init() {
         try {
@@ -103,8 +104,13 @@ const Audio = (() => {
     // =====================================================
     // SFX
     // =====================================================
-    function shoot()      { _note(1046, 0.05, 'square', 0.09); }
-    function enemyHit()   { _note(185,  0.07, 'sawtooth', 0.11); }
+    function shoot()      { _note(980 + Math.random() * 100, 0.04, 'square', 0.06); }
+    function enemyHit() {
+        if (!ctx || ctx.currentTime - lastHitTime < 0.075) return;
+        lastHitTime = ctx.currentTime;
+        const freq = 160 + Math.random() * 40;
+        _note(freq, 0.06, 'triangle', 0.07);
+    }
     function enemyDie()   { _noise(0.18, 0.18, 500); }
     function playerHit()  { _noise(0.28, 0.30, 150); }
     function powerup()    { _note(880, 0.08, 'sine', 0.13); _note(1100, 0.13, 'sine', 0.12, 0.07); }
