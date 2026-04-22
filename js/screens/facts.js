@@ -93,13 +93,14 @@ const FactsScreen = (() => {
         // Fact Image
         const img = Renderer.getImage(`fact${factId}`);
         if (img) {
-            // scale to fit width with some padding
             const padding = 20;
             const targetW = W - padding * 2;
             const targetH = (targetW / img.width) * img.height;
+            const maxH = 320;
+            const finalH = Math.min(targetH, maxH);
+            const finalW = (finalH / targetH) * targetW;
             
-            // v30: Layout ajustado para el logo
-            ctx.drawImage(img, W/2 - targetW/2, 130, targetW, targetH);
+            ctx.drawImage(img, W/2 - finalW/2, 105, finalW, finalH);
         } else {
             // Fallback
             ctx.font = '10px "Press Start 2P"';
