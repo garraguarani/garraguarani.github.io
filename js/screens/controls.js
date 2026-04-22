@@ -63,10 +63,10 @@ const ControlsScreen = (() => {
         y += spacing + 10;
         ctx.fillStyle = '#FFFFFF';
         ctx.font = '10px "Press Start 2P"';
-        ctx.fillText('🔥 Disparo: ¡Automático!', 20, y);
+        ctx.fillText('⚽ Disparo: ¡Automático!', 20, y);
         
         y += spacing;
-        ctx.fillText('⚽ Cambiar Arma: Botón o [Q]', 20, y);
+        ctx.fillText('🔥 Cambiar Arma: Botón o [Q]', 20, y);
 
         y += spacing;
         ctx.fillText('💣 Mega Gol: Botón o [R]', 20, y);

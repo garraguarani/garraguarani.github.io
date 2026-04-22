@@ -7,7 +7,7 @@ const MenuScreen = (() => {
     let time = 0;
     let selectedOption = 0;
     let inputCooldown = 0;
-    const OPTIONS = ['JUGAR EL MUNDIAL 🏆', 'CAMPEONATO PYO 🇵🇾', 'CONTROLES 🎮', 'SONIDO 🔊'];
+    const OPTIONS = ['JUGAR EL MUNDIAL 🏆', 'CAMPEONATO ⚽', 'CONTROLES 🎮', 'SONIDO 🔊'];
     let soundOn = true;
     let audioContextStarted = false;
 

@@ -61,9 +61,9 @@ const ComingSoonScreen = (() => {
         ctx.fillText('PROXIMAMENTE', 0, 0);
         ctx.restore();
 
-        // Paraguay flag details
+        // Ball instead of flag
         ctx.font = '40px serif';
-        ctx.fillText('🇵🇾', W/2, H/2 + 60);
+        ctx.fillText('⚽', W/2, H/2 + 60);
 
         // Footer
         ctx.font = '8px "Press Start 2P"';
