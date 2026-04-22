@@ -36,6 +36,10 @@ const FactsScreen = (() => {
 
     function update(dt, input) {
         time += dt;
+
+        // Prevent inputs carrying over from the previous screen (Shop)
+        if (time < 1.0) return null;
+
         let action = null;
         
         if (input.isTapActive()) {
