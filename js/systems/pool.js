@@ -36,7 +36,10 @@ class Pool {
         obj.active = false;
         const idx = this.active.indexOf(obj);
         if (idx !== -1) {
-            this.active.splice(idx, 1);
+            const last = this.active.pop();
+            if (last !== obj) {
+                this.active[idx] = last;
+            }
         }
         this.pool.push(obj);
     }
@@ -58,7 +61,10 @@ class Pool {
                 obj.update(dt);
             }
             if (!obj.active) {
-                this.active.splice(i, 1);
+                const last = this.active.pop();
+                if (last !== obj) {
+                    this.active[i] = last;
+                }
                 this.pool.push(obj);
             }
         }
