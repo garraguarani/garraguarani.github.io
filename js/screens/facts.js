@@ -22,7 +22,7 @@ const FactsScreen = (() => {
         buttons.length = 0;
         buttons.push({
             x: W / 2,
-            y: H - 80,
+            y: H - 90,
             w: 220,
             h: 50,
             text: 'CONTINUAR ▶',
@@ -96,11 +96,11 @@ const FactsScreen = (() => {
             const padding = 20;
             const targetW = W - padding * 2;
             const targetH = (targetW / img.width) * img.height;
-            const maxH = 320;
+            const maxH = 300;
             const finalH = Math.min(targetH, maxH);
             const finalW = (finalH / targetH) * targetW;
             
-            ctx.drawImage(img, W/2 - finalW/2, 105, finalW, finalH);
+            ctx.drawImage(img, W/2 - finalW/2, 85, finalW, finalH);
         } else {
             // Fallback
             ctx.font = '10px "Press Start 2P"';
