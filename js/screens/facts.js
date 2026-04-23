@@ -22,7 +22,7 @@ const FactsScreen = (() => {
         buttons.length = 0;
         buttons.push({
             x: W / 2,
-            y: H - 90,
+            y: H - 95,
             w: 220,
             h: 50,
             text: 'CONTINUAR ▶',
