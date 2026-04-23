@@ -596,26 +596,50 @@ const Game = (() => {
     }
 
     function _megaGolEffect() {
-        // Kill all enemies on screen
+        const cx = CONFIG.GAME_WIDTH / 2;
+        const cy = CONFIG.GAME_HEIGHT / 2;
+        
+        // Big black shockwave circle (grows from player)
+        Particles.explode(cx, cy, 40, '#000000', 600, 25);
+        
+        // Lightning-like explosion waves (多次)
+        for (let w = 0; w < 4; w++) {
+            setTimeout(() => {
+                if (window.Game) {
+                    const wx = CONFIG.GAME_WIDTH / 2;
+                    const wy = CONFIG.GAME_HEIGHT / 2;
+                    Particles.explode(wx, wy, 30, '#FFFFFF', 400, 15);
+                    Particles.explode(wx, wy, 25, '#CCCC00', 350, 12);
+                }
+            }, w * 80);
+        }
+        
+        // Kill all enemies with individual mega explosions
         for (let i = enemies.active.length - 1; i >= 0; i--) {
             const e = enemies.active[i];
             if (e.active) {
+                // Big explosion per enemy
+                Particles.explode(e.x, e.y, 35, '#000000', 300, 15);
+                Particles.explode(e.x, e.y, 20, '#FF0000', 250, 10);
+                Particles.explode(e.x, e.y, 15, '#FFDD00', 200, 8);
                 e.takeDamage(999);
                 onEnemyKilled(e);
             }
         }
-        // Damage boss
+        
+        // Massive damage to boss
         if (currentBoss.active && currentBoss.alive) {
-            currentBoss.takeDamage(20);
+            currentBoss.takeDamage(80);
             Particles.bossExplode(currentBoss.x, currentBoss.y);
+            Particles.bossExplode(currentBoss.x - 30, currentBoss.y - 20, 20, CONFIG.COLORS.PY_RED, 200, 10);
+            Particles.bossExplode(currentBoss.x + 30, currentBoss.y + 20, 20, '#FFDD00', 200, 10);
             if (!currentBoss.alive) {
                 onBossKilled(currentBoss);
             }
         }
-        // Clear enemy bullets
+        
+        // Clear ALL bullets
         enemyBullets.releaseAll();
-        // Screen flash
-        Particles.explode(CONFIG.GAME_WIDTH / 2, CONFIG.GAME_HEIGHT / 2, 40, CONFIG.COLORS.PY_GOLD, 300, 5);
     }
 
     // --- Save/Load ---
