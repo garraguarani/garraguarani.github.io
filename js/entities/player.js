@@ -257,15 +257,6 @@ class Player {
         }
     }
 
-    cycleSelectableWeapon() {
-        // Obsolete but kept for safety if called elsewhere
-        const s = ['basic', 'fire', 'triple', 'guided', 'bomb'];
-        const unlocked = s.filter(k => this.weapons[k].unlocked);
-        const idx = unlocked.indexOf(this.selectedWeapon);
-        this.selectedWeapon = unlocked[(idx + 1) % unlocked.length];
-        Audio.menuSelect();
-    }
-
     draw(ctx) {
         if (!this.alive) return;
 

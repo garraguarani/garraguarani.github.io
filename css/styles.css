@@ -255,16 +255,6 @@ html, body {
     50% { box-shadow: 0 0 20px rgba(255, 26, 53, 0.8); }
 }
 
-.hud-garra-bar {
-    flex: 1;
-    height: 10px;
-    margin: 0 8px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 4px;
-    overflow: hidden;
-}
-
 .hud-garra-fill {
     width: 0%;
     height: 100%;

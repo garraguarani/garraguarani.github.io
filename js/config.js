@@ -52,7 +52,6 @@ const CONFIG = {
     // Screen states
     STATES: {
         LOADING: 'loading',
-        INTRO: 'intro',
         MENU: 'menu',
         LEVEL_SELECT: 'level_select',
         PLAYING: 'playing',

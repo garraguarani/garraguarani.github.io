@@ -238,9 +238,6 @@ const Game = (() => {
         }
 
         // Keyboard shortcuts
-        if (Input.isKeyDown('KeyQ')) {
-            player.cycleSelectableWeapon();
-        }
         if (Input.isKeyDown('KeyE')) {
             player.activateGarra();
         }
